@@ -1,0 +1,48 @@
+{
+  "name": "hc-dev-cli",
+  "version": "0.200.0",
+  "description": "CLI to run Holochain aps during development.",
+  "main": "./out/main/index.js",
+  "author": "example.com",
+  "homepage": "https://electron-vite.org",
+  "scripts": {
+    "format": "prettier --write .",
+    "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "start": "electron-vite preview",
+    "dev": "electron-vite dev",
+    "build": "npm run typecheck && electron-vite build",
+    "setup": "cd rust-utils && yarn && yarn build && cd ..",
+    "postinstall": "electron-builder install-app-deps",
+    "build:win": "npm run build && electron-builder --win --config",
+    "build:mac": "npm run build && electron-builder --mac --config",
+    "build:linux": "npm run build && electron-builder --linux --config"
+  },
+  "dependencies": {
+    "@electron-toolkit/preload": "^3.0.0",
+    "@electron-toolkit/utils": "^3.0.0",
+    "@holochain/client": "^0.16.3",
+    "commander": "11.1.0",
+    "electron-context-menu": "3.6.1",
+    "get-port": "7.0.0",
+    "hc-dev-cli-rust-utils": "file:./rust-utils/dist",
+    "nanoid": "5.0.4",
+    "split": "1.0.1"
+  },
+  "devDependencies": {
+    "@electron-toolkit/eslint-config-prettier": "^2.0.0",
+    "@electron-toolkit/eslint-config-ts": "^1.0.1",
+    "@electron-toolkit/tsconfig": "^1.0.1",
+    "@types/node": "^18.19.5",
+    "electron": "^28.1.1",
+    "electron-builder": "^24.9.1",
+    "electron-vite": "https://github.com/matthme/electron-vite.git#forward-cli-args-dist",
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11"
+  },
+  "packageManager": "yarn@1.22.19"
+}
