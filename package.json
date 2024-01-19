@@ -36,12 +36,14 @@
     "@electron-toolkit/eslint-config-ts": "^1.0.1",
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@types/node": "^18.19.5",
+    "bufferutil": "4.0.8",
     "electron": "^28.1.1",
     "electron-builder": "^24.9.1",
     "electron-vite": "https://github.com/matthme/electron-vite.git#forward-cli-args-dist",
     "eslint": "^8.56.0",
     "prettier": "^3.1.1",
     "typescript": "^5.3.3",
+    "utf-8-validate": "^6.0.3",
     "vite": "^5.0.11"
   },
   "packageManager": "yarn@1.22.19"

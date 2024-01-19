@@ -9,6 +9,7 @@ import * as childProcess from 'child_process';
 import { ZomeCallSigner, ZomeCallUnsignedNapi } from 'hc-dev-cli-rust-utils';
 import { createHappWindow } from './windows';
 import getPort from 'get-port';
+import { AdminWebsocket, AgentPubKey, AppWebsocket } from '@holochain/client';
 
 const rustUtils = require('hc-dev-cli-rust-utils');
 
@@ -47,6 +48,7 @@ app.setPath('userData', path.join(DATA_ROOT_DIR, 'electron'));
 const SANDBOX_PROCESSES: childProcess.ChildProcessWithoutNullStreams[] = [];
 let LAIR_KEYSTORE_URL: string | undefined;
 let ZOME_CALL_SIGNER: ZomeCallSigner | undefined;
+const WINDOW_INFO_MAP: Record<string, AgentPubKey> = {};
 
 contextMenu({
   showSaveImageAs: true,
@@ -54,11 +56,10 @@ contextMenu({
   showInspectElement: true,
 });
 
-const handleSignZomeCall = (_e: IpcMainInvokeEvent, zomeCall: ZomeCallUnsignedNapi) => {
-  // TODO check upblic keys
-  // const windowInfo = WINDOW_INFO_MAP[e.sender.id];
-  // if (zomeCall.provenance.toString() !== Array.from(windowInfo.agentPubKey).toString())
-  //   return Promise.reject('Agent public key unauthorized.');
+const handleSignZomeCall = (e: IpcMainInvokeEvent, zomeCall: ZomeCallUnsignedNapi) => {
+  const windowPubKey = WINDOW_INFO_MAP[e.sender.id];
+  if (zomeCall.provenance.toString() !== Array.from(windowPubKey).toString())
+    return Promise.reject('Agent public key unauthorized.');
   if (!ZOME_CALL_SIGNER) throw new Error('Zome call signer not ready.');
   return ZOME_CALL_SIGNER.signZomeCall(zomeCall);
 };
@@ -158,37 +159,6 @@ async function spawnSandboxes(
   });
 }
 
-// function createHappWindow(): void {
-//   // Create the browser window.
-//   const happWindow = new BrowserWindow({
-//     width: 900,
-//     height: 670,
-//     show: false,
-//     autoHideMenuBar: true,
-//     ...(process.platform === 'linux' ? { icon } : {}),
-//     webPreferences: {
-//       preload: path.join(__dirname, '../preload/index.js'),
-//     },
-//   });
-
-//   happWindow.on('ready-to-show', () => {
-//     happWindow.show();
-//   });
-
-//   happWindow.webContents.setWindowOpenHandler((details) => {
-//     shell.openExternal(details.url);
-//     return { action: 'deny' };
-//   });
-
-//   // HMR for renderer base on electron-vite cli.
-//   // Load the remote URL for development or the local html file for production.
-//   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-//     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
-//   } else {
-//     mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
-//   }
-// }
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -211,13 +181,17 @@ app.whenReady().then(async () => {
   // open browser window for each sandbox
   //
   for (var i = 1; i <= cli.opts().numAgents; i++) {
-    createHappWindow(
+    const appPort = portsInfo[i - 1].app_ports[0];
+    const appWs = await AppWebsocket.connect(new URL(`ws://127.0.0.1:${appPort}`));
+    const appInfo = await appWs.appInfo({ installed_app_id: 'happ' });
+    const happWindow = createHappWindow(
       { type: 'port', port: cli.opts().uiPort },
       'happ',
       i,
-      portsInfo[i - 1].app_ports[0],
+      appPort,
       DATA_ROOT_DIR,
     );
+    WINDOW_INFO_MAP[happWindow.webContents.id] = appInfo.agent_pub_key;
   }
 
   // app.on('activate', function () {
