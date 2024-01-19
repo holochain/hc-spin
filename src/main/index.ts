@@ -9,14 +9,14 @@ import * as childProcess from 'child_process';
 import { ZomeCallSigner, ZomeCallUnsignedNapi } from 'hc-dev-cli-rust-utils';
 import { createHappWindow } from './windows';
 import getPort from 'get-port';
-import { AdminWebsocket, AgentPubKey, AppWebsocket } from '@holochain/client';
+import { AgentPubKey, AppWebsocket } from '@holochain/client';
 
 const rustUtils = require('hc-dev-cli-rust-utils');
 
 const cli = new Command();
 
 cli
-  .name('Holochain App Development CLI')
+  .name('hc-dev-cli')
   .description('CLI to run Holochain aps during development.')
   .version(`${app.getVersion()} (for holochain 0.2.x)`)
   .argument(
@@ -47,8 +47,10 @@ app.setPath('userData', path.join(DATA_ROOT_DIR, 'electron'));
 // const SANDBOX_DIRECTORIES: Array<string> = [];
 const SANDBOX_PROCESSES: childProcess.ChildProcessWithoutNullStreams[] = [];
 let LAIR_KEYSTORE_URL: string | undefined;
-let ZOME_CALL_SIGNER: ZomeCallSigner | undefined;
-const WINDOW_INFO_MAP: Record<string, AgentPubKey> = {};
+const WINDOW_INFO_MAP: Record<
+  string,
+  { agentPubKey: AgentPubKey; zomeCallSigner: ZomeCallSigner }
+> = {};
 
 contextMenu({
   showSaveImageAs: true,
@@ -57,11 +59,10 @@ contextMenu({
 });
 
 const handleSignZomeCall = (e: IpcMainInvokeEvent, zomeCall: ZomeCallUnsignedNapi) => {
-  const windowPubKey = WINDOW_INFO_MAP[e.sender.id];
-  if (zomeCall.provenance.toString() !== Array.from(windowPubKey).toString())
+  const windowInfo = WINDOW_INFO_MAP[e.sender.id];
+  if (zomeCall.provenance.toString() !== Array.from(windowInfo.agentPubKey).toString())
     return Promise.reject('Agent public key unauthorized.');
-  if (!ZOME_CALL_SIGNER) throw new Error('Zome call signer not ready.');
-  return ZOME_CALL_SIGNER.signZomeCall(zomeCall);
+  return windowInfo.zomeCallSigner.signZomeCall(zomeCall);
 };
 
 async function startLocalServices(): Promise<[string, string]> {
@@ -105,7 +106,7 @@ async function spawnSandboxes(
   signalUrl: string,
   appId: string,
   networkSeed?: string,
-): Promise<[childProcess.ChildProcessWithoutNullStreams, Array<PortsInfo>]> {
+): Promise<[childProcess.ChildProcessWithoutNullStreams, Array<PortsInfo>, Array<string>]> {
   console.log('GOT HAPP PATH: ', happPath);
   const generateArgs = [
     'sandbox',
@@ -133,6 +134,7 @@ async function spawnSandboxes(
 
   let readyConductors = 0;
   const portsInfo: PortsInfo[] = [];
+  const lairUrls: string[] = [];
 
   const sandboxHandle = childProcess.spawn('hc', generateArgs);
   sandboxHandle.stdin.write('pass');
@@ -141,7 +143,8 @@ async function spawnSandboxes(
     sandboxHandle.stdout.pipe(split()).on('data', async (line: string) => {
       console.log(`[hc-dev-cli] | [hc sandbox]: ${line}`);
       if (line.includes('lair-keystore connection_url')) {
-        LAIR_KEYSTORE_URL = line.split('#')[2].trim();
+        const lairKeystoreUrl = line.split('#')[2].trim();
+        lairUrls.push(lairKeystoreUrl);
         console.log('GOT LAIR_KEYSTORE_URL: ', LAIR_KEYSTORE_URL);
       }
       if (line.includes('Conductor launched')) {
@@ -150,7 +153,7 @@ async function spawnSandboxes(
         portsInfo.push(ports);
         // hc-sandbox: Conductor launched #!1 {"admin_port":32805,"app_ports":[45309]}
         readyConductors += 1;
-        if (readyConductors === nAgents) resolve([sandboxHandle, portsInfo]);
+        if (readyConductors === nAgents) resolve([sandboxHandle, portsInfo, lairUrls]);
       }
     });
     sandboxHandle.stderr.pipe(split()).on('data', async (line: string) => {
@@ -166,7 +169,7 @@ app.whenReady().then(async () => {
   ipcMain.handle('sign-zome-call', handleSignZomeCall);
   const [bootstrapUrl, signalUrl] = await startLocalServices();
   console.log('GOT BOOTSTRAP AND SIGNAL URL: ', bootstrapUrl, signalUrl);
-  const [sandboxHandle, portsInfo] = await spawnSandboxes(
+  const [sandboxHandle, portsInfo, lairUrls] = await spawnSandboxes(
     2,
     cli.args[0],
     bootstrapUrl,
@@ -176,22 +179,25 @@ app.whenReady().then(async () => {
 
   SANDBOX_PROCESSES.push(sandboxHandle);
 
-  ZOME_CALL_SIGNER = await rustUtils.ZomeCallSigner.connect(LAIR_KEYSTORE_URL, 'pass');
-
   // open browser window for each sandbox
   //
-  for (var i = 1; i <= cli.opts().numAgents; i++) {
-    const appPort = portsInfo[i - 1].app_ports[0];
+  for (var i = 0; i < cli.opts().numAgents; i++) {
+    const zomeCallSigner = await rustUtils.ZomeCallSigner.connect(lairUrls[i], 'pass');
+
+    const appPort = portsInfo[i].app_ports[0];
     const appWs = await AppWebsocket.connect(new URL(`ws://127.0.0.1:${appPort}`));
     const appInfo = await appWs.appInfo({ installed_app_id: 'happ' });
     const happWindow = createHappWindow(
       { type: 'port', port: cli.opts().uiPort },
       'happ',
-      i,
+      i + 1,
       appPort,
       DATA_ROOT_DIR,
     );
-    WINDOW_INFO_MAP[happWindow.webContents.id] = appInfo.agent_pub_key;
+    WINDOW_INFO_MAP[happWindow.webContents.id] = {
+      agentPubKey: appInfo.agent_pub_key,
+      zomeCallSigner,
+    };
   }
 
   // app.on('activate', function () {
@@ -211,7 +217,6 @@ app.on('window-all-closed', () => {
 });
 
 app.on('quit', () => {
-  console.log('QUITTING.');
   // SANDBOX_PROCESSES.forEach((handle) => handle.kill());
   fs.rmSync(DATA_ROOT_DIR, { recursive: true, force: true, maxRetries: 4 });
 });
