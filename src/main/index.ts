@@ -236,5 +236,7 @@ app.on('quit', () => {
     path.join(DATA_ROOT_DIR, '.abandoned'),
     "I'm not in use anymore by an active hc-dev-cli process.",
   );
+  // clean up sandboxes
+  childProcess.spawnSync('hc', ['sandbox', 'clean']);
   // SANDBOX_PROCESSES.forEach((handle) => handle.kill());
 });
