@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { InstalledAppId } from '@holochain/client';
-import { BrowserWindow, shell } from 'electron';
+import { BrowserWindow, net, shell } from 'electron';
 
 export type UISource =
   | {
@@ -13,13 +13,13 @@ export type UISource =
       port: number;
     };
 
-export const createHappWindow = (
+export const createHappWindow = async (
   uiSource: UISource,
   appId: InstalledAppId,
   agentNum: number,
   appPort: number,
   appDataRootDir: string,
-): BrowserWindow => {
+): Promise<BrowserWindow> => {
   if (uiSource.type !== 'port') throw new Error('Only UI port is currently implemented.');
   // TODO create mapping between installed-app-id's and window ids
   if (!appPort) throw new Error('App port not defined.');
@@ -69,6 +69,7 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
   const happWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    show: false,
     webPreferences: {
       preload: preloadPath,
       partition,
@@ -93,9 +94,20 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
   });
   // console.log('Loading happ window file');
   // happWindow.loadURL(`webhapp://webhappwindow/index.html`);
-  happWindow.loadURL(`http://127.0.0.1:${uiSource.port}`);
-
   happWindow.webContents.openDevTools();
+
+  try {
+    // Check whether dev server is responsive and index.html exists
+    await net.fetch(`http://127.0.0.1:${uiSource.port}/index.html`);
+  } catch (e) {
+    console.error(`No index.html file found at http://127.0.0.1:${uiSource.port}/index.html`, e);
+    happWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+    happWindow.show();
+    return happWindow;
+  }
+  happWindow.loadURL(`http://127.0.0.1:${uiSource.port}`);
+  happWindow.show();
+
   return happWindow;
 };
 

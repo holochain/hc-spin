@@ -202,7 +202,7 @@ app.whenReady().then(async () => {
     const appPort = portsInfo[i].app_ports[0];
     const appWs = await AppWebsocket.connect(new URL(`ws://127.0.0.1:${appPort}`));
     const appInfo = await appWs.appInfo({ installed_app_id: 'happ' });
-    const happWindow = createHappWindow(
+    const happWindow = await createHappWindow(
       { type: 'port', port: cli.opts().uiPort },
       'happ',
       i + 1,

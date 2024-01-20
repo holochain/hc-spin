@@ -3,18 +3,33 @@
   <head>
     <meta charset="UTF-8" />
     <title>Holochain dev CLI</title>
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
     />
-
-    <link href="./assets/styles.css" type="text/css" rel="stylesheet" />
   </head>
 
   <body>
-    <div class="container"></div>
-
+    <div class="container">
+      <h1>index.html not found.</h1>
+      <div>
+        Is your dev server running at the port specified with the
+        <span class="code">--ui-port</span> flag?
+      </div>
+    </div>
     <script type="module" src="./src/renderer.ts"></script>
   </body>
 </html>
+<style>
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .code {
+    background-color: lightgray;
+    border-radius: 3px;
+    padding: 1px 3px;
+  }
+</style>
