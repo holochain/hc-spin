@@ -23,11 +23,17 @@ cli
     '<path>',
     'Path to .webhapp or .happ file to launch. If a .happ file is passed, either a UI path must be specified via --ui-path or a port pointing to a localhost server via --ui-port',
   )
+  .option(
+    '--app-id <string>',
+    'Install the app with a specific app id. By default the app id is derived from the name of the .webhapp/.happ file that you pass but this option allows you to set it explicitly',
+  )
+  .option('--holochain-path <path>', 'Set the path to the holochain binary [default: holochain].')
   .addOption(
     new Option('-n, --num-agents <number>', 'How many agents to spawn the app for.').argParser(
       parseInt,
     ),
   )
+  .option('--network-seed <string>', 'Install the app with a specific network seed.')
   .option('--ui-path <path>', "Path to the folder containing the index.html of the webhapp's UI.")
   .option(
     '--ui-port <number>',
@@ -38,8 +44,18 @@ cli.parse();
 console.log('Got CLI opts: ', cli.opts());
 console.log('Got CLI args: ', cli.args);
 
-// Set app path to temp directory
+// Garbage collect unused directories of previous runs
+const files = fs.readdirSync(app.getPath('temp'));
+const hcDevCliFolders = files.filter((file) => file.startsWith(`hc-dev-cli-`));
+for (const folder of hcDevCliFolders) {
+  const folderPath = path.join(app.getPath('temp'), folder);
+  const folderFiles = fs.readdirSync(folderPath);
+  if (folderFiles.includes('.abandoned')) {
+    fs.rmSync(folderPath, { recursive: true, force: true, maxRetries: 4 });
+  }
+}
 
+// Set app path to temp directory
 const DATA_ROOT_DIR = path.join(app.getPath('temp'), `hc-dev-cli-${nanoid(8)}`);
 
 app.setPath('userData', path.join(DATA_ROOT_DIR, 'electron'));
@@ -107,7 +123,6 @@ async function spawnSandboxes(
   appId: string,
   networkSeed?: string,
 ): Promise<[childProcess.ChildProcessWithoutNullStreams, Array<PortsInfo>, Array<string>]> {
-  console.log('GOT HAPP PATH: ', happPath);
   const generateArgs = [
     'sandbox',
     '--piped',
@@ -217,6 +232,9 @@ app.on('window-all-closed', () => {
 });
 
 app.on('quit', () => {
+  fs.writeFileSync(
+    path.join(DATA_ROOT_DIR, '.abandoned'),
+    "I'm not in use anymore by an active hc-dev-cli process.",
+  );
   // SANDBOX_PROCESSES.forEach((handle) => handle.kill());
-  fs.rmSync(DATA_ROOT_DIR, { recursive: true, force: true, maxRetries: 4 });
 });
