@@ -1,1 +1,1 @@
-console.log('index.html not found.');
+console.error('index.html not found.');

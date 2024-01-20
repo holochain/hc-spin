@@ -160,7 +160,6 @@ async function spawnSandboxes(
       if (line.includes('lair-keystore connection_url')) {
         const lairKeystoreUrl = line.split('#')[2].trim();
         lairUrls.push(lairKeystoreUrl);
-        console.log('GOT LAIR_KEYSTORE_URL: ', LAIR_KEYSTORE_URL);
       }
       if (line.includes('Conductor launched')) {
         const ports: PortsInfo = JSON.parse(`{${line.split('{')[1]}`);

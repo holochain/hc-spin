@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import { InstalledAppId } from '@holochain/client';
 import { BrowserWindow, net, shell } from 'electron';
+import { is } from '@electron-toolkit/utils';
 
 export type UISource =
   | {
@@ -101,7 +102,13 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
     await net.fetch(`http://127.0.0.1:${uiSource.port}/index.html`);
   } catch (e) {
     console.error(`No index.html file found at http://127.0.0.1:${uiSource.port}/index.html`, e);
-    happWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+    const indexHtmlPath = path.join(__dirname, '../renderer/index.html');
+    console.log('indexHtmlPath: ', indexHtmlPath);
+    if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+      happWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
+    } else {
+      happWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+    }
     happWindow.show();
     return happWindow;
   }
