@@ -164,7 +164,7 @@ async function spawnSandboxes(
     generateArgs.push(networkSeed);
   }
   generateArgs.push(happPath, 'network', '--bootstrap', bootStrapUrl, 'webrtc', signalUrl);
-  console.log('GENERATE ARGS: ', generateArgs);
+  // console.log('GENERATE ARGS: ', generateArgs);
 
   let readyConductors = 0;
   const portsInfo: Record<number, PortsInfo> = {};

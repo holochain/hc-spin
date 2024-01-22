@@ -103,12 +103,12 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
       happWindow.show();
       return happWindow;
     }
-    happWindow.loadURL(`http://127.0.0.1:${uiSource.port}`);
+    await happWindow.loadURL(`http://127.0.0.1:${uiSource.port}`);
   } else if (uiSource.type === 'path') {
     try {
-      happWindow.loadURL(`webhapp://webhappwindow/index.html`);
+      await happWindow.loadURL(`webhapp://webhappwindow/index.html`);
     } catch (e) {
-      console.error('[ERROR] Failed to fetch index.html.');
+      console.error('[ERROR] Failed to fetch index.html');
 
       if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
         happWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
@@ -118,13 +118,15 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
             ? path.join(__dirname, '../renderer/indexNotFound1.html')
             : path.join(__dirname, '../renderer/indexNotFound2.html');
         happWindow.loadFile(notFoundPath);
-        happWindow.show();
       }
+
+      happWindow.show();
       return happWindow;
     }
   } else {
     throw new Error('Unsupported uiSource type: ', (uiSource as any).type);
   }
+
   happWindow.show();
 
   return happWindow;
