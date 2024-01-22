@@ -10,13 +10,14 @@ import { ZomeCallSigner, ZomeCallUnsignedNapi } from 'hc-dev-cli-rust-utils';
 import { createHappWindow } from './windows';
 import getPort from 'get-port';
 import { AgentPubKey, AppWebsocket } from '@holochain/client';
+import { validateCliArgs } from './validateArgs';
 
 const rustUtils = require('hc-dev-cli-rust-utils');
 
 const cli = new Command();
 
 cli
-  .name('hc-dev-cli')
+  .name('hc-spin')
   .description('CLI to run Holochain aps during development.')
   .version(`${app.getVersion()} (for holochain 0.2.x)`)
   .argument(
@@ -26,6 +27,10 @@ cli
   .option(
     '--app-id <string>',
     'Install the app with a specific app id. By default the app id is derived from the name of the .webhapp/.happ file that you pass but this option allows you to set it explicitly',
+  )
+  .option(
+    '--bootstrap-url <url>',
+    'Url of the bootstrap server to use. By default, hc spin spins up a local development bootstrap server for you but this argument allows you to specify a custom one.',
   )
   .option('--holochain-path <path>', 'Set the path to the holochain binary [default: holochain].')
   .addOption(
@@ -38,6 +43,10 @@ cli
   .option(
     '--ui-port <number>',
     'Port pointing to a localhost dev server that serves your UI assets.',
+  )
+  .option(
+    '--signaling-url <url>',
+    'Url of the signaling server to use. By default, hc spin spins up a local development signaling server for you but this argument allows you to specify a custom one.',
   );
 
 cli.parse();
@@ -59,6 +68,8 @@ for (const folder of hcDevCliFolders) {
 const DATA_ROOT_DIR = path.join(app.getPath('temp'), `hc-dev-cli-${nanoid(8)}`);
 
 app.setPath('userData', path.join(DATA_ROOT_DIR, 'electron'));
+
+const CLI_OPTS = validateCliArgs(cli.args, cli.opts(), DATA_ROOT_DIR);
 
 // const SANDBOX_DIRECTORIES: Array<string> = [];
 const SANDBOX_PROCESSES: childProcess.ChildProcessWithoutNullStreams[] = [];
@@ -194,14 +205,16 @@ async function spawnSandboxes(
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
   ipcMain.handle('sign-zome-call', handleSignZomeCall);
-  const [bootstrapUrl, signalUrl] = await startLocalServices();
-  console.log('GOT BOOTSTRAP AND SIGNAL URL: ', bootstrapUrl, signalUrl);
+  const [bootstrapUrl, signalingUrl] = await startLocalServices();
+  // TODO unpack assets to UI dir if webhapp is passed
+
+  //
   const [sandboxHandle, sandboxPaths, portsInfo] = await spawnSandboxes(
-    2,
-    cli.args[0],
-    bootstrapUrl,
-    signalUrl,
-    'happ',
+    CLI_OPTS.numAgents,
+    CLI_OPTS.happOrWebhappPath.path,
+    CLI_OPTS.bootstrapUrl ? CLI_OPTS.bootstrapUrl : bootstrapUrl,
+    CLI_OPTS.singalingUrl ? CLI_OPTS.singalingUrl : signalingUrl,
+    CLI_OPTS.appId,
   );
 
   const lairUrls: string[] = [];
@@ -230,10 +243,10 @@ app.whenReady().then(async () => {
 
     const appPort = portsInfo[i].app_ports[0];
     const appWs = await AppWebsocket.connect(new URL(`ws://127.0.0.1:${appPort}`));
-    const appInfo = await appWs.appInfo({ installed_app_id: 'happ' });
+    const appInfo = await appWs.appInfo({ installed_app_id: CLI_OPTS.appId });
     const happWindow = await createHappWindow(
       { type: 'port', port: cli.opts().uiPort },
-      'happ',
+      CLI_OPTS.appId,
       i + 1,
       appPort,
       DATA_ROOT_DIR,

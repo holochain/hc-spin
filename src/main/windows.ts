@@ -71,6 +71,7 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
     width: 1200,
     height: 800,
     show: false,
+    title: `Agent ${agentNum} - ${appId}`,
     webPreferences: {
       preload: preloadPath,
       partition,
@@ -79,9 +80,11 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
 
   happWindow.menuBarVisible = false;
 
-  happWindow.setTitle(`Agent ${agentNum} - ${appId}`);
-
   setLinkOpenHandlers(happWindow);
+
+  happWindow.on('page-title-updated', (evt) => {
+    evt.preventDefault();
+  });
 
   happWindow.on('close', () => {
     console.log(`Happ window with frame id ${happWindow.id} about to be closed.`);
