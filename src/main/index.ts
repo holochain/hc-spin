@@ -247,7 +247,7 @@ app.whenReady().then(async () => {
         //   connection_url: unix:///tmp/NgYtyB9jdYSC6BlmNTyra/keystore/socket?k=c-B-bRZIObKsh9c5q899hWjAWsWT28DNQUSElAFLJic
         const lairUrl = line.split('connection_url:')[1].trim();
         lairUrls.push(lairUrl);
-        console.log('Got lairUrl form conductor-config.yaml: ', lairUrl);
+        // console.log('Got lairUrl form conductor-config.yaml: ', lairUrl);
         break;
       }
     }
@@ -255,7 +255,7 @@ app.whenReady().then(async () => {
 
   SANDBOX_PROCESSES.push(sandboxHandle);
 
-  console.log('Got CLI_OPTS: ', CLI_OPTS);
+  // console.log('Got CLI_OPTS: ', CLI_OPTS);
 
   // open browser window for each sandbox
   //

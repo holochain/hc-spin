@@ -73,18 +73,6 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
     evt.preventDefault();
   });
 
-  happWindow.on('close', () => {
-    console.log(`Happ window with frame id ${happWindow.id} about to be closed.`);
-    // prevent closing here and hide instead in case notifications are to be received from this happ UI
-  });
-
-  happWindow.on('closed', () => {
-    // remove protocol handler
-    // ses.protocol.unhandle('webhapp');
-    // happWindow = null;
-  });
-  // console.log('Loading happ window file');
-  // happWindow.loadURL(`webhapp://webhappwindow/index.html`);
   happWindow.webContents.openDevTools();
 
   if (uiSource.type === 'port') {
@@ -94,7 +82,6 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
     } catch (e) {
       console.error(`No index.html file found at http://127.0.0.1:${uiSource.port}/index.html`, e);
       const indexHtmlPath = path.join(__dirname, '../renderer/index.html');
-      console.log('indexHtmlPath: ', indexHtmlPath);
       if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
         happWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
       } else {
