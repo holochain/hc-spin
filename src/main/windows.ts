@@ -58,7 +58,7 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
 
   if (uiSource.type === 'path') {
     const iconPath = path.join(uiSource.path, 'icon.png');
-    if (!fs.existsSync(iconPath)) {
+    if (!fs.existsSync(iconPath) && agentNum === 1) {
       console.warn(
         '\n\n+++++ WARNING +++++\n[hc-spin] No icon.png found. It is recommended to put an icon.png file (1024x1024 pixel) in the root of your UI assets directory which can be used by the Holochain Launcher.\n+++++++++++++++++++\n\n',
       );
