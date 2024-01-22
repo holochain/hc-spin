@@ -50,8 +50,8 @@ cli
   );
 
 cli.parse();
-console.log('Got CLI opts: ', cli.opts());
-console.log('Got CLI args: ', cli.args);
+// console.log('Got CLI opts: ', cli.opts());
+// console.log('Got CLI args: ', cli.args);
 
 // Garbage collect unused directories of previous runs
 const files = fs.readdirSync(app.getPath('temp'));
