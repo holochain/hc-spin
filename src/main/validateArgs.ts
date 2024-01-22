@@ -21,10 +21,12 @@ export type CliOptsValidated = {
   uiSource: UISource;
   singalingUrl: string | undefined;
   bootstrapUrl: string | undefined;
-  happOrWebhappPath: {
-    type: 'happ' | 'webhapp';
-    path: string;
-  };
+  happOrWebhappPath: HappOrWebhappPath;
+};
+
+export type HappOrWebhappPath = {
+  type: 'happ' | 'webhapp';
+  path: string;
 };
 
 export function validateCliArgs(
@@ -78,7 +80,7 @@ export function validateCliArgs(
       ? { type: 'path', path: cliOpts.uiPath }
       : cliOpts.uiPort
         ? { type: 'port', port: cliOpts.uiPort }
-        : { type: 'path', path: path.join(appDataRootDir, 'ui') },
+        : { type: 'path', path: path.join(appDataRootDir, 'apps', appId, 'ui') },
     singalingUrl: cliOpts.signalingUrl,
     bootstrapUrl: cliOpts.bootstrapUrl,
     happOrWebhappPath: isHapp

@@ -1,4 +1,4 @@
-import { app, IpcMainInvokeEvent, ipcMain } from 'electron';
+import { app, IpcMainInvokeEvent, ipcMain, protocol } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import { nanoid } from 'nanoid';
@@ -77,6 +77,13 @@ const WINDOW_INFO_MAP: Record<
   string,
   { agentPubKey: AgentPubKey; zomeCallSigner: ZomeCallSigner }
 > = {};
+
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'webhapp',
+    privileges: { standard: true },
+  },
+]);
 
 contextMenu({
   showSaveImageAs: true,
@@ -205,13 +212,25 @@ async function spawnSandboxes(
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
   ipcMain.handle('sign-zome-call', handleSignZomeCall);
-  const [bootstrapUrl, signalingUrl] = await startLocalServices();
-  // TODO unpack assets to UI dir if webhapp is passed
 
-  //
+  let happTargetDir: string | undefined;
+  // TODO unpack assets to UI dir if webhapp is passed
+  if (CLI_OPTS.happOrWebhappPath.type === 'webhapp') {
+    happTargetDir = path.join(DATA_ROOT_DIR, 'apps', CLI_OPTS.appId);
+    const uiTargetDir = path.join(happTargetDir, 'ui');
+    await rustUtils.saveHappOrWebhapp(
+      CLI_OPTS.happOrWebhappPath.path,
+      CLI_OPTS.appId,
+      uiTargetDir,
+      happTargetDir,
+    );
+  }
+
+  const [bootstrapUrl, signalingUrl] = await startLocalServices();
+
   const [sandboxHandle, sandboxPaths, portsInfo] = await spawnSandboxes(
     CLI_OPTS.numAgents,
-    CLI_OPTS.happOrWebhappPath.path,
+    happTargetDir ? happTargetDir : CLI_OPTS.happOrWebhappPath.path,
     CLI_OPTS.bootstrapUrl ? CLI_OPTS.bootstrapUrl : bootstrapUrl,
     CLI_OPTS.singalingUrl ? CLI_OPTS.singalingUrl : signalingUrl,
     CLI_OPTS.appId,
@@ -236,6 +255,8 @@ app.whenReady().then(async () => {
 
   SANDBOX_PROCESSES.push(sandboxHandle);
 
+  console.log('Got CLI_OPTS: ', CLI_OPTS);
+
   // open browser window for each sandbox
   //
   for (var i = 0; i < cli.opts().numAgents; i++) {
@@ -245,7 +266,8 @@ app.whenReady().then(async () => {
     const appWs = await AppWebsocket.connect(new URL(`ws://127.0.0.1:${appPort}`));
     const appInfo = await appWs.appInfo({ installed_app_id: CLI_OPTS.appId });
     const happWindow = await createHappWindow(
-      { type: 'port', port: cli.opts().uiPort },
+      CLI_OPTS.uiSource,
+      CLI_OPTS.happOrWebhappPath,
       CLI_OPTS.appId,
       i + 1,
       appPort,
@@ -279,6 +301,6 @@ app.on('quit', () => {
     "I'm not in use anymore by an active hc-dev-cli process.",
   );
   // clean up sandboxes
+  SANDBOX_PROCESSES.forEach((handle) => handle.kill());
   childProcess.spawnSync('hc', ['sandbox', 'clean']);
-  // SANDBOX_PROCESSES.forEach((handle) => handle.kill());
 });

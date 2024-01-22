@@ -1,33 +1,24 @@
-use holochain_types::app::AppBundle;
 use holochain_types::web_app::WebAppBundle;
-use sha2::{Digest, Sha256};
 use std::fs;
 use std::path::PathBuf;
 
 #[napi]
 pub async fn save_happ_or_webhapp(
     happ_or_web_happ_path: String,
+    app_id: String,
     uis_dir: String,
     happs_dir: String,
-) -> napi::Result<String> {
+) -> napi::Result<()> {
     let happ_or_webhapp_bytes = fs::read(happ_or_web_happ_path)?;
 
-    let (app_bundle, maybe_ui_and_webhapp_hash) = match WebAppBundle::decode(&happ_or_webhapp_bytes)
-    {
+    let app_bundle = match WebAppBundle::decode(&happ_or_webhapp_bytes) {
         Ok(web_app_bundle) => {
-            let mut hasher = Sha256::new();
-            hasher.update(happ_or_webhapp_bytes);
-            let web_happ_hash = hex::encode(hasher.finalize());
             // extracting ui.zip bytes
             let web_ui_zip_bytes = web_app_bundle.web_ui_zip_bytes().await.map_err(|e| {
                 napi::Error::from_reason(format!("Failed to extract ui zip bytes: {}", e))
             })?;
 
-            let mut hasher = Sha256::new();
-            hasher.update(web_ui_zip_bytes.clone().into_owned().into_inner());
-            let ui_hash = hex::encode(hasher.finalize());
-
-            let ui_target_dir = PathBuf::from(uis_dir).join(ui_hash.clone()).join("assets");
+            let ui_target_dir = PathBuf::from(uis_dir);
             if !path_exists(&ui_target_dir) {
                 fs::create_dir_all(&ui_target_dir)?;
             }
@@ -62,45 +53,29 @@ pub async fn save_happ_or_webhapp(
                 ))
             })?;
 
-            (app_bundle, Some((ui_hash, web_happ_hash)))
+            app_bundle
         }
-        Err(_) => {
-            let app_bundle = AppBundle::decode(&happ_or_webhapp_bytes).map_err(|e| {
-                napi::Error::from_reason(format!("Failed to decode happ file: {}", e))
-            })?;
-            (app_bundle, None)
+        Err(e) => {
+            return Err(napi::Error::from_reason(format!(
+                "Failed to decode .webhapp file: {}",
+                e
+            )))
         }
     };
 
-    let mut hasher = Sha256::new();
-    let app_bundle_bytes = app_bundle
-        .encode()
-        .map_err(|e| napi::Error::from_reason(format!("Failed to encode happ to bytes: {}", e)))?;
-    hasher.update(app_bundle_bytes);
-    let happ_hash = hex::encode(hasher.finalize());
-    let happ_path = PathBuf::from(happs_dir).join(format!("{}.happ", happ_hash));
+    let happs_dir = PathBuf::from(happs_dir);
+    if !path_exists(&happs_dir) {
+        fs::create_dir_all(&happs_dir)?;
+    }
+
+    let happ_path = happs_dir.join(format!("{}.happ", app_id));
 
     app_bundle
         .write_to_file(&happ_path)
         .await
         .map_err(|e| napi::Error::from_reason(format!("Failed to write .happ file: {}", e)))?;
 
-    let happ_path_string = happ_path.as_os_str().to_str();
-    match happ_path_string {
-        Some(str) => match maybe_ui_and_webhapp_hash {
-            Some((ui_hash, web_happ_hash)) => Ok(format!(
-                "{}${}${}${}",
-                str.to_string(),
-                happ_hash,
-                ui_hash,
-                web_happ_hash,
-            )),
-            None => Ok(format!("{}${}", str.to_string(), happ_hash)),
-        },
-        None => Err(napi::Error::from_reason(
-            "Failed to convert happ path to string.",
-        )),
-    }
+    Ok(())
 }
 
 pub fn path_exists(path: &PathBuf) -> bool {

@@ -1,8 +1,10 @@
 import path from 'path';
 import fs from 'fs';
+import url from 'url';
 import { InstalledAppId } from '@holochain/client';
-import { BrowserWindow, net, shell } from 'electron';
+import { BrowserWindow, net, session, shell } from 'electron';
 import { is } from '@electron-toolkit/utils';
+import { HappOrWebhappPath } from './validateArgs';
 
 export type UISource =
   | {
@@ -16,46 +18,30 @@ export type UISource =
 
 export const createHappWindow = async (
   uiSource: UISource,
+  happOrWebhappPath: HappOrWebhappPath,
   appId: InstalledAppId,
   agentNum: number,
   appPort: number,
   appDataRootDir: string,
 ): Promise<BrowserWindow> => {
-  if (uiSource.type !== 'port') throw new Error('Only UI port is currently implemented.');
   // TODO create mapping between installed-app-id's and window ids
   if (!appPort) throw new Error('App port not defined.');
 
   const partition = `persist:${agentNum}:${appId}`;
 
-  // const ses = session.fromPartition(partition)
-  // ses.protocol.handle('webhapp', async (request) => {
-  //   // console.log("### Got file request: ", request);
-  //   const uriWithoutProtocol = request.url.slice('webhapp://'.length);
-  //   const filePathComponents = uriWithoutProtocol.split('/').slice(1);
-  //   const filePath = join(...filePathComponents);
-  //   const resource = net.fetch(
-  //     url
-  //       .pathToFileURL(join(launcherFileSystem.happUiDir(appId, holochainDataRoot), filePath))
-  //       .toString(),
-  //   );
-  //   if (!filePath.endsWith('index.html')) {
-  //     return resource;
-  //   } else {
-  //     const indexHtmlResponse = await resource;
-  //     const indexHtml = await indexHtmlResponse.text();
-  //     let modifiedContent = indexHtml.replace(
-  //       '<head>',
-  //       `<head><script type="module">window.__HC_LAUNCHER_ENV__ = { APP_INTERFACE_PORT: ${appPort}, INSTALLED_APP_ID: "${appId}", FRAMEWORK: "electron" };</script>`,
-  //     );
-  //     // remove title attribute to be able to set title to app id later
-  //     modifiedContent = modifiedContent.replace(/<title>.*?<\/title>/i, '');
-  //     return new Response(modifiedContent, indexHtmlResponse);
-  //   }
-  // });
-  // Create the browser window.
+  if (uiSource.type === 'path') {
+    const ses = session.fromPartition(partition);
+    ses.protocol.handle('webhapp', async (request) => {
+      const uriWithoutProtocol = request.url.slice('webhapp://'.length);
+      const filePathComponents = uriWithoutProtocol.split('/').slice(1);
+      const filePath = path.join(...filePathComponents);
+      return net.fetch(url.pathToFileURL(path.join(uiSource.path, filePath)).toString());
+    });
+  }
 
   // Extend preload script to add window.__HC_LAUNCHER_ENV__
   let preloadScript = fs.readFileSync(path.join(__dirname, '../preload/index.js')).toString();
+
   preloadScript += `
 electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
   APP_INTERFACE_PORT: ${appPort},
@@ -63,8 +49,9 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
   FRAMEWORK: "electron"
 });
     `;
+
   const preloadPath = path.join(appDataRootDir, `preload-${agentNum}-${appId}.js`);
-  console.log('preloadPath: ', preloadPath);
+
   fs.writeFileSync(preloadPath, preloadScript);
 
   const happWindow = new BrowserWindow({
@@ -100,22 +87,44 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
   // happWindow.loadURL(`webhapp://webhappwindow/index.html`);
   happWindow.webContents.openDevTools();
 
-  try {
-    // Check whether dev server is responsive and index.html exists
-    await net.fetch(`http://127.0.0.1:${uiSource.port}/index.html`);
-  } catch (e) {
-    console.error(`No index.html file found at http://127.0.0.1:${uiSource.port}/index.html`, e);
-    const indexHtmlPath = path.join(__dirname, '../renderer/index.html');
-    console.log('indexHtmlPath: ', indexHtmlPath);
-    if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-      happWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
-    } else {
-      happWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+  if (uiSource.type === 'port') {
+    try {
+      // Check whether dev server is responsive and index.html exists
+      await net.fetch(`http://127.0.0.1:${uiSource.port}/index.html`);
+    } catch (e) {
+      console.error(`No index.html file found at http://127.0.0.1:${uiSource.port}/index.html`, e);
+      const indexHtmlPath = path.join(__dirname, '../renderer/index.html');
+      console.log('indexHtmlPath: ', indexHtmlPath);
+      if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+        happWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
+      } else {
+        happWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+      }
+      happWindow.show();
+      return happWindow;
     }
-    happWindow.show();
-    return happWindow;
+    happWindow.loadURL(`http://127.0.0.1:${uiSource.port}`);
+  } else if (uiSource.type === 'path') {
+    try {
+      happWindow.loadURL(`webhapp://webhappwindow/index.html`);
+    } catch (e) {
+      console.error('[ERROR] Failed to fetch index.html.');
+
+      if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+        happWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
+      } else {
+        const notFoundPath =
+          happOrWebhappPath.type === 'webhapp'
+            ? path.join(__dirname, '../renderer/indexNotFound1.html')
+            : path.join(__dirname, '../renderer/indexNotFound2.html');
+        happWindow.loadFile(notFoundPath);
+        happWindow.show();
+      }
+      return happWindow;
+    }
+  } else {
+    throw new Error('Unsupported uiSource type: ', (uiSource as any).type);
   }
-  happWindow.loadURL(`http://127.0.0.1:${uiSource.port}`);
   happWindow.show();
 
   return happWindow;

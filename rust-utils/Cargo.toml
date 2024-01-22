@@ -32,7 +32,6 @@ napi = { version = "2.12.2", default-features = false, features = [
 napi-derive = "2.12.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"
-sha2 = "0.10.8"
 sodoken = "0.0.9"
 url = "2.2"
 url2 = "0.0.6"
