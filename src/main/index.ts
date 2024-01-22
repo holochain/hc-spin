@@ -62,7 +62,6 @@ app.setPath('userData', path.join(DATA_ROOT_DIR, 'electron'));
 
 // const SANDBOX_DIRECTORIES: Array<string> = [];
 const SANDBOX_PROCESSES: childProcess.ChildProcessWithoutNullStreams[] = [];
-let LAIR_KEYSTORE_URL: string | undefined;
 const WINDOW_INFO_MAP: Record<
   string,
   { agentPubKey: AgentPubKey; zomeCallSigner: ZomeCallSigner }
@@ -122,7 +121,9 @@ async function spawnSandboxes(
   signalUrl: string,
   appId: string,
   networkSeed?: string,
-): Promise<[childProcess.ChildProcessWithoutNullStreams, Array<PortsInfo>, Array<string>]> {
+): Promise<
+  [childProcess.ChildProcessWithoutNullStreams, Array<string>, Record<number, PortsInfo>]
+> {
   const generateArgs = [
     'sandbox',
     '--piped',
@@ -148,7 +149,8 @@ async function spawnSandboxes(
   console.log('GENERATE ARGS: ', generateArgs);
 
   let readyConductors = 0;
-  const portsInfo: PortsInfo[] = [];
+  const portsInfo: Record<number, PortsInfo> = {};
+  const sandboxPaths: Array<string> = [];
   const lairUrls: string[] = [];
 
   const sandboxHandle = childProcess.spawn('hc', generateArgs);
@@ -157,17 +159,28 @@ async function spawnSandboxes(
   return new Promise((resolve) => {
     sandboxHandle.stdout.pipe(split()).on('data', async (line: string) => {
       console.log(`[hc-dev-cli] | [hc sandbox]: ${line}`);
+      if (line.includes('Created directory at:')) {
+        // hc-sandbox: Created directory at: /tmp/v7cLY7ls3onZFMmyrFi5y Keep this path to rerun the same sandbox. It has also been saved to a file called `.hc` in your current working directory.
+        const sanboxPath = line
+          .split('\x1B[1;4;48;5;254;38;5;4m')[1]
+          .split('\x1B[0m \x1B[1m')[0]
+          .trim();
+
+        sandboxPaths.push(sanboxPath);
+      }
       if (line.includes('lair-keystore connection_url')) {
         const lairKeystoreUrl = line.split('#')[2].trim();
         lairUrls.push(lairKeystoreUrl);
       }
       if (line.includes('Conductor launched')) {
-        const ports: PortsInfo = JSON.parse(`{${line.split('{')[1]}`);
-        console.log('READ PORTS: ', ports);
-        portsInfo.push(ports);
+        // hc-sandbox: Conductor launched #!1 {"admin_port":37045,"app_ports":[]}
+        const split1 = line.split('{');
+        const ports: PortsInfo = JSON.parse(`{${split1[1]}`);
+        const conductorNum = split1[0].split('#!')[1].trim();
+        portsInfo[conductorNum] = ports;
         // hc-sandbox: Conductor launched #!1 {"admin_port":32805,"app_ports":[45309]}
         readyConductors += 1;
-        if (readyConductors === nAgents) resolve([sandboxHandle, portsInfo, lairUrls]);
+        if (readyConductors === nAgents) resolve([sandboxHandle, sandboxPaths, portsInfo]);
       }
     });
     sandboxHandle.stderr.pipe(split()).on('data', async (line: string) => {
@@ -183,13 +196,30 @@ app.whenReady().then(async () => {
   ipcMain.handle('sign-zome-call', handleSignZomeCall);
   const [bootstrapUrl, signalUrl] = await startLocalServices();
   console.log('GOT BOOTSTRAP AND SIGNAL URL: ', bootstrapUrl, signalUrl);
-  const [sandboxHandle, portsInfo, lairUrls] = await spawnSandboxes(
+  const [sandboxHandle, sandboxPaths, portsInfo] = await spawnSandboxes(
     2,
     cli.args[0],
     bootstrapUrl,
     signalUrl,
     'happ',
   );
+
+  const lairUrls: string[] = [];
+  sandboxPaths.forEach((sandbox) => {
+    console.log('sandbox: ', sandbox);
+    const conductorConfigPath = path.join(sandbox, 'conductor-config.yaml');
+    const configStr = fs.readFileSync(conductorConfigPath, 'utf-8');
+    const lines = configStr.split('\n');
+    for (const line of lines) {
+      if (line.includes('connection_url')) {
+        //   connection_url: unix:///tmp/NgYtyB9jdYSC6BlmNTyra/keystore/socket?k=c-B-bRZIObKsh9c5q899hWjAWsWT28DNQUSElAFLJic
+        const lairUrl = line.split('connection_url:')[1].trim();
+        lairUrls.push(lairUrl);
+        console.log('Got lairUrl form conductor-config.yaml: ', lairUrl);
+        break;
+      }
+    }
+  });
 
   SANDBOX_PROCESSES.push(sandboxHandle);
 
