@@ -65,6 +65,11 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
     },
   });
 
+  const [windowPositionX, windowPositionY] = happWindow.getPosition();
+  const windowPositionXMoved = windowPositionX + agentNum * 20;
+  const windowPositionYMoved = windowPositionY + agentNum * 20;
+  happWindow.setPosition(windowPositionXMoved, windowPositionYMoved);
+
   happWindow.menuBarVisible = false;
 
   setLinkOpenHandlers(happWindow);
@@ -81,7 +86,6 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
       await net.fetch(`http://127.0.0.1:${uiSource.port}/index.html`);
     } catch (e) {
       console.error(`No index.html file found at http://127.0.0.1:${uiSource.port}/index.html`, e);
-      const indexHtmlPath = path.join(__dirname, '../renderer/index.html');
       if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
         happWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
       } else {

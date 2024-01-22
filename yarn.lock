@@ -2077,7 +2077,7 @@ hasown@^2.0.0:
   dependencies:
     function-bind "^1.1.2"
 
-"hc-dev-cli-rust-utils@file:./rust-utils/dist":
+"hc-spin-rust-utils@file:./rust-utils/dist":
   version "0.0.1"
 
 hosted-git-info@^4.1.0:

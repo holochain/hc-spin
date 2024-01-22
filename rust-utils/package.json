@@ -1,5 +1,5 @@
 {
-  "name": "hc-dev-cli-rust-utils",
+  "name": "hc-spin-rust-utils",
   "version": "0.0.1",
   "main": "index.js",
   "types": "index.d.ts",

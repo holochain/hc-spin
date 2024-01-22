@@ -1,12 +1,12 @@
 {
-  "name": "hc-dev-cli",
+  "name": "hc-spin",
   "version": "0.200.0",
   "description": "CLI to run Holochain aps during development.",
   "author": "matthme",
   "homepage": "https://developer.holochain.org",
   "main": "out/main/index.js",
   "bin": {
-    "hc-dev-cli": "./dist/cli.js"
+    "hc-spin": "./dist/cli.js"
   },
   "scripts": {
     "format": "prettier --write .",
@@ -27,7 +27,7 @@
     "electron": "^28.1.1",
     "electron-context-menu": "3.6.1",
     "get-port": "7.0.0",
-    "hc-dev-cli-rust-utils": "file:./rust-utils/dist",
+    "hc-spin-rust-utils": "file:./rust-utils/dist",
     "nanoid": "5.0.4",
     "split": "1.0.1"
   },

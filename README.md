@@ -1,4 +1,4 @@
-# hc-dev-cli
+# hc-spin
 
 CLI to run Holochain apps in dev mode.
 

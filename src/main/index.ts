@@ -6,13 +6,13 @@ import { Command, Option } from 'commander';
 import contextMenu from 'electron-context-menu';
 import split from 'split';
 import * as childProcess from 'child_process';
-import { ZomeCallSigner, ZomeCallUnsignedNapi } from 'hc-dev-cli-rust-utils';
+import { ZomeCallSigner, ZomeCallUnsignedNapi } from 'hc-spin-rust-utils';
 import { createHappWindow } from './windows';
 import getPort from 'get-port';
 import { AgentPubKey, AppWebsocket } from '@holochain/client';
 import { validateCliArgs } from './validateArgs';
 
-const rustUtils = require('hc-dev-cli-rust-utils');
+const rustUtils = require('hc-spin-rust-utils');
 
 const cli = new Command();
 
@@ -55,8 +55,8 @@ cli.parse();
 
 // Garbage collect unused directories of previous runs
 const files = fs.readdirSync(app.getPath('temp'));
-const hcDevCliFolders = files.filter((file) => file.startsWith(`hc-dev-cli-`));
-for (const folder of hcDevCliFolders) {
+const hcSpinFolders = files.filter((file) => file.startsWith(`hc-spin-`));
+for (const folder of hcSpinFolders) {
   const folderPath = path.join(app.getPath('temp'), folder);
   const folderFiles = fs.readdirSync(folderPath);
   if (folderFiles.includes('.abandoned')) {
@@ -65,7 +65,7 @@ for (const folder of hcDevCliFolders) {
 }
 
 // Set app path to temp directory
-const DATA_ROOT_DIR = path.join(app.getPath('temp'), `hc-dev-cli-${nanoid(8)}`);
+const DATA_ROOT_DIR = path.join(app.getPath('temp'), `hc-spin-${nanoid(8)}`);
 
 app.setPath('userData', path.join(DATA_ROOT_DIR, 'electron'));
 
@@ -106,7 +106,7 @@ async function startLocalServices(): Promise<[string, string]> {
     let bootstrapRunning = false;
     let signalRunnig = false;
     localServicesHandle.stdout.pipe(split()).on('data', async (line: string) => {
-      console.log(`[hc-dev-cli] | [hc run-local-services]: ${line}`);
+      console.log(`[hc-spin] | [hc run-local-services]: ${line}`);
       if (line.includes('HC BOOTSTRAP - ADDR:')) {
         bootStrapUrl = line.split('# HC BOOTSTRAP - ADDR:')[1].trim();
       }
@@ -122,7 +122,7 @@ async function startLocalServices(): Promise<[string, string]> {
       if (bootstrapRunning && signalRunnig) resolve([bootStrapUrl, signalUrl]);
     });
     localServicesHandle.stderr.pipe(split()).on('data', async (line: string) => {
-      console.log(`[hc-dev-cli] | [hc run-local-services] ERROR: ${line}`);
+      console.log(`[hc-spin] | [hc run-local-services] ERROR: ${line}`);
     });
   });
 }
@@ -176,7 +176,7 @@ async function spawnSandboxes(
   sandboxHandle.stdin.end();
   return new Promise((resolve) => {
     sandboxHandle.stdout.pipe(split()).on('data', async (line: string) => {
-      console.log(`[hc-dev-cli] | [hc sandbox]: ${line}`);
+      console.log(`[hc-spin] | [hc sandbox]: ${line}`);
       if (line.includes('Created directory at:')) {
         // hc-sandbox: Created directory at: /tmp/v7cLY7ls3onZFMmyrFi5y Keep this path to rerun the same sandbox. It has also been saved to a file called `.hc` in your current working directory.
         const sanboxPath = line
@@ -202,7 +202,7 @@ async function spawnSandboxes(
       }
     });
     sandboxHandle.stderr.pipe(split()).on('data', async (line: string) => {
-      console.log(`[hc-dev-cli] | [hc sandbox] ERROR: ${line}`);
+      console.log(`[hc-spin] | [hc sandbox] ERROR: ${line}`);
     });
   });
 }
@@ -298,7 +298,7 @@ app.on('window-all-closed', () => {
 app.on('quit', () => {
   fs.writeFileSync(
     path.join(DATA_ROOT_DIR, '.abandoned'),
-    "I'm not in use anymore by an active hc-dev-cli process.",
+    "I'm not in use anymore by an active hc-spin process.",
   );
   // clean up sandboxes
   SANDBOX_PROCESSES.forEach((handle) => handle.kill());
