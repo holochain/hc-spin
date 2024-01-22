@@ -4,6 +4,7 @@
   "description": "CLI to run Holochain aps during development.",
   "author": "matthme",
   "homepage": "https://developer.holochain.org",
+  "license": "MIT",
   "main": "out/main/index.js",
   "bin": {
     "hc-spin": "./dist/cli.js"
