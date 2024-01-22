@@ -238,7 +238,6 @@ app.whenReady().then(async () => {
 
   const lairUrls: string[] = [];
   sandboxPaths.forEach((sandbox) => {
-    console.log('sandbox: ', sandbox);
     const conductorConfigPath = path.join(sandbox, 'conductor-config.yaml');
     const configStr = fs.readFileSync(conductorConfigPath, 'utf-8');
     const lines = configStr.split('\n');

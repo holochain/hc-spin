@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import url from 'url';
 import { InstalledAppId } from '@holochain/client';
-import { BrowserWindow, net, session, shell } from 'electron';
+import { BrowserWindow, NativeImage, nativeImage, net, session, shell } from 'electron';
 import { is } from '@electron-toolkit/utils';
 import { HappOrWebhappPath } from './validateArgs';
 
@@ -54,10 +54,36 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
 
   fs.writeFileSync(preloadPath, preloadScript);
 
+  let icon: NativeImage | undefined;
+
+  if (uiSource.type === 'path') {
+    const iconPath = path.join(uiSource.path, 'icon.png');
+    if (!fs.existsSync(iconPath)) {
+      console.warn(
+        '\n\n+++++ WARNING +++++\n[hc-spin] No icon.png found. It is recommended to put an icon.png file (1024x1024 pixel) in the root of your UI assets directory which can be used by the Holochain Launcher.\n+++++++++++++++++++\n\n',
+      );
+    }
+    icon = nativeImage.createFromPath(iconPath);
+  } else {
+    try {
+      const iconResponse = await net.fetch(`http://127.0.0.1:${uiSource.port}/icon.png`);
+      const buffer = await iconResponse.arrayBuffer();
+      if (buffer.byteLength === 0 && agentNum === 1) {
+        console.warn(
+          '\n\n+++++ WARNING +++++\n[hc-spin] No icon.png found. It is recommended to put an icon.png file (1024x1024 pixel) in the root of your UI assets directory which can be used by the Holochain Launcher.\n+++++++++++++++++++\n\n',
+        );
+      }
+      icon = nativeImage.createFromBuffer(Buffer.from(buffer));
+    } catch (e) {
+      console.error('Failed to get icon.png: ', e);
+    }
+  }
+
   const happWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     show: false,
+    icon,
     title: `Agent ${agentNum} - ${appId}`,
     webPreferences: {
       preload: preloadPath,
