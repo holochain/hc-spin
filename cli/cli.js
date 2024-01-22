@@ -2,7 +2,7 @@
 const { spawn } = require('child_process');
 const path = require('path');
 
-const electronBinary = path.resolve(__dirname, '../node_modules/.bin/electron');
+const electronBinary = path.resolve(__dirname, '../../../../node_modules/.bin/electron');
 
 const child = spawn(
   electronBinary,
