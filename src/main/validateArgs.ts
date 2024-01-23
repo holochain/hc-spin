@@ -6,21 +6,15 @@ export type CliOpts = {
   appId?: string;
   holochainPath?: string;
   numAgents?: number;
-  networkSeed?: string;
   uiPath?: string;
   uiPort?: number;
-  signalingUrl?: string;
-  bootstrapUrl?: string;
 };
 
 export type CliOptsValidated = {
   appId: string;
   holochainPath: string | undefined;
   numAgents: number;
-  networkSeed: string | undefined;
   uiSource: UISource;
-  singalingUrl: string | undefined;
-  bootstrapUrl: string | undefined;
   happOrWebhappPath: HappOrWebhappPath;
 };
 
@@ -75,14 +69,11 @@ export function validateCliArgs(
     appId,
     holochainPath,
     numAgents,
-    networkSeed: cliOpts.networkSeed,
     uiSource: cliOpts.uiPath
       ? { type: 'path', path: cliOpts.uiPath }
       : cliOpts.uiPort
         ? { type: 'port', port: cliOpts.uiPort }
         : { type: 'path', path: path.join(appDataRootDir, 'apps', appId, 'ui') },
-    singalingUrl: cliOpts.signalingUrl,
-    bootstrapUrl: cliOpts.bootstrapUrl,
     happOrWebhappPath: isHapp
       ? { type: 'happ', path: happOrWebhappPath }
       : { type: 'webhapp', path: happOrWebhappPath },

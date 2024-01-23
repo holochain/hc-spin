@@ -2,6 +2,22 @@
 
 CLI to run Holochain apps in development mode.
 
+## Installation
+
+To install the latest version compatible with holochain 0.1.x:
+
+```
+npm install --save-dev @holochain/hc-spin@">=0.100.0 <0.200.0"
+```
+
+To install the latest version compatible with holochain 0.2.x:
+
+```
+npm install --save-dev @holochain/hc-spin@">=0.200.0 <0.300.0"
+```
+
+## Usage
+
 ```
 Usage: hc-spin [options] <path>
 
@@ -15,14 +31,11 @@ Options:
   -V, --version              output the version number
   --app-id <string>          Install the app with a specific app id. By default the app id is derived from the name of the .webhapp/.happ
                              file that you pass but this option allows you to set it explicitly
-  --bootstrap-url <url>      Url of the bootstrap server to use. By default, hc spin spins up a local development bootstrap server for you
                              but this argument allows you to specify a custom one.
   --holochain-path <path>    Set the path to the holochain binary [default: holochain].
   -n, --num-agents <number>  How many agents to spawn the app for.
-  --network-seed <string>    Install the app with a specific network seed.
   --ui-path <path>           Path to the folder containing the index.html of the webhapp's UI.
   --ui-port <number>         Port pointing to a localhost dev server that serves your UI assets.
-  --signaling-url <url>      Url of the signaling server to use. By default, hc spin spins up a local development signaling server for you
                              but this argument allows you to specify a custom one.
   -h, --help                 display help for command
 ```
