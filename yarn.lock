@@ -486,6 +486,30 @@
     lodash-es "^4.17.21"
     ws "^8.14.2"
 
+"@holochain/hc-spin-rust-utils-darwin-x64@0.200.2":
+  version "0.200.2"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-darwin-x64/-/hc-spin-rust-utils-darwin-x64-0.200.2.tgz#ebe7eef22657804394cf860110e93eb32e1322f1"
+  integrity sha512-LJaBg0XDqkeC9WHbjA7i8bRskAtPqGY8Bv21v/dfZID4KNAvmZAhr8S5USSwX/ZGFGf1yTbOy0eFjV9qHSiBvg==
+
+"@holochain/hc-spin-rust-utils-linux-x64-gnu@0.200.2":
+  version "0.200.2"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-linux-x64-gnu/-/hc-spin-rust-utils-linux-x64-gnu-0.200.2.tgz#e3ef4d4877b8e360418b4a7d7fd892f18c97cf76"
+  integrity sha512-OCqppyYVUshQdddWnTCXL9XeyiGmYnzhfep2sGdkp4DuuciMLbeCyPvbq0k80ZAnQt1jo0QkEnSRrOsKCL9m1w==
+
+"@holochain/hc-spin-rust-utils-win32-x64-msvc@0.200.2":
+  version "0.200.2"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-win32-x64-msvc/-/hc-spin-rust-utils-win32-x64-msvc-0.200.2.tgz#38e8a3497e80e2254dc6e39651afaeb844098c5b"
+  integrity sha512-8S6Ll8kvOFeAgz9N+3A2P60BZRr+brFIU8s0eUg4CABMdDS2jCSLfw7PXcerSoU0d4CSsuzzdcNpaAZYWoNC6Q==
+
+"@holochain/hc-spin-rust-utils@0.200.2":
+  version "0.200.2"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils/-/hc-spin-rust-utils-0.200.2.tgz#8953b1c13702e87f7f8f8cde0f6fdad769c10eb8"
+  integrity sha512-3hXSci/FMBYEpaO8bB8pYkw9dePNdufR3pr+txQK1qqNLIssoggtZqelNAmEwk/yT+97waB5BYMqk+0GlpjcZw==
+  optionalDependencies:
+    "@holochain/hc-spin-rust-utils-darwin-x64" "0.200.2"
+    "@holochain/hc-spin-rust-utils-linux-x64-gnu" "0.200.2"
+    "@holochain/hc-spin-rust-utils-win32-x64-msvc" "0.200.2"
+
 "@holochain/serialization@^0.1.0-beta-rc.3":
   version "0.1.0-beta-rc.3"
   resolved "https://registry.yarnpkg.com/@holochain/serialization/-/serialization-0.1.0-beta-rc.3.tgz#787a785fa48e00f2d168c6d4b45a233c4800cccb"
@@ -2076,9 +2100,6 @@ hasown@^2.0.0:
   integrity sha512-vUptKVTpIJhcczKBbgnS+RtcuYMB8+oNzPK2/Hp3hanz8JmpATdmmgLgSaadVREkDm+e2giHwY3ZRkyjSIDDFA==
   dependencies:
     function-bind "^1.1.2"
-
-"hc-spin-rust-utils@file:./rust-utils/dist":
-  version "0.0.1"
 
 hosted-git-info@^4.1.0:
   version "4.1.0"

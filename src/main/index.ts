@@ -6,13 +6,13 @@ import { Command, Option } from 'commander';
 import contextMenu from 'electron-context-menu';
 import split from 'split';
 import * as childProcess from 'child_process';
-import { ZomeCallSigner, ZomeCallUnsignedNapi } from 'hc-spin-rust-utils';
+import { ZomeCallSigner, ZomeCallUnsignedNapi } from '@holochain/hc-spin-rust-utils';
 import { createHappWindow } from './windows';
 import getPort from 'get-port';
 import { AgentPubKey, AppWebsocket } from '@holochain/client';
 import { validateCliArgs } from './validateArgs';
 
-const rustUtils = require('hc-spin-rust-utils');
+const rustUtils = require('@holochain/hc-spin-rust-utils');
 
 const cli = new Command();
 
