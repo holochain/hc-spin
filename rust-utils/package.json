@@ -1,16 +1,16 @@
 {
-  "name": "hc-spin-rust-utils",
-  "version": "0.0.1",
+  "name": "@holochain/hc-spin-rust-utils",
+  "version": "0.200.0",
   "main": "index.js",
   "types": "index.d.ts",
   "napi": {
-    "name": "hc-we-rust-utils",
+    "name": "hc-spin-rust-utils",
     "triples": {}
   },
   "license": "MIT",
+  "description": "Rust node add-ons used by @holochain/hc-spin",
   "devDependencies": {
     "@napi-rs/cli": "^2.16.5",
-    "rimraf": "5.0.5",
     "ava": "^5.1.1"
   },
   "ava": {
@@ -21,7 +21,8 @@
   },
   "scripts": {
     "artifacts": "napi artifacts",
-    "build": "napi build --platform --release && rimraf dist && mkdir dist && cp package.json dist/ && cp index.js dist/ && cp index.d.ts dist/ && cp hc-we-rust-utils* dist/",
+    "build": "napi build --platform --release",
+    "build:local": "napi build --platform --release && rimraf dist && mkdir dist && cp package.json dist/ && cp index.js dist/ && cp index.d.ts dist/ && cp hc-spin-rust-utils* dist/",
     "build:debug": "napi build --platform",
     "prepublishOnly": "napi prepublish -t npm",
     "test": "ava",

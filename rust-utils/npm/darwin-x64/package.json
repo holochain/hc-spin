@@ -1,5 +1,5 @@
 {
-  "name": "hc-we-rust-utils-darwin-x64",
+  "name": "@holochain/hc-spin-rust-utils-darwin-x64",
   "version": "0.0.0",
   "os": [
     "darwin"
@@ -7,9 +7,9 @@
   "cpu": [
     "x64"
   ],
-  "main": "hc-we-rust-utils.darwin-x64.node",
+  "main": "hc-spin-rust-utils.darwin-x64.node",
   "files": [
-    "hc-we-rust-utils.darwin-x64.node"
+    "hc-spin-rust-utils.darwin-x64.node"
   ],
   "license": "MIT",
   "engines": {

@@ -1,5 +1,5 @@
 {
-  "name": "hc-we-rust-utils-linux-x64-gnu",
+  "name": "@holochain/hc-spin-rust-utils-linux-x64-gnu",
   "version": "0.0.0",
   "os": [
     "linux"
@@ -7,9 +7,9 @@
   "cpu": [
     "x64"
   ],
-  "main": "hc-we-rust-utils.linux-x64-gnu.node",
+  "main": "hc-spin-rust-utils.linux-x64-gnu.node",
   "files": [
-    "hc-we-rust-utils.linux-x64-gnu.node"
+    "hc-spin-rust-utils.linux-x64-gnu.node"
   ],
   "license": "MIT",
   "engines": {
