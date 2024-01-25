@@ -104,18 +104,11 @@ const handleSignZomeCall = (e: IpcMainInvokeEvent, zomeCall: ZomeCallUnsignedNap
   return windowInfo.zomeCallSigner.signZomeCall(zomeCall);
 };
 
-type PortsInfo = {
-  admin_port: number;
-  app_ports: number[];
-};
-
 async function spawnSandboxes(
   nAgents: number,
   happPath: string,
   appId: string,
-): Promise<
-  [childProcess.ChildProcessWithoutNullStreams, Array<string>, Record<number, PortsInfo>]
-> {
+): Promise<[childProcess.ChildProcessWithoutNullStreams, Array<string>, Array<number>]> {
   const generateArgs = [
     'sandbox',
     '--piped',
@@ -124,19 +117,30 @@ async function spawnSandboxes(
     nAgents.toString(),
     '--app-id',
     appId,
-    '--run',
   ];
-  let appPorts = '';
+
+  const appPorts: number[] = [];
+  let appPortsString = '';
   for (var i = 1; i <= nAgents; i++) {
     const appPort = await getPort();
-    appPorts += `${appPort},`;
+    appPortsString += `${appPort},`;
+    appPorts.push(appPort);
   }
-  generateArgs.push(appPorts.slice(0, appPorts.length - 1));
+  generateArgs.push('--run', appPortsString.slice(0, appPortsString.length - 1));
+
+  // const adminPorts: number[] = [];
+  // let adminPortsString = '';
+  // for (var i = 1; i <= nAgents; i++) {
+  //   const adminPort = await getPort();
+  //   adminPortsString += `${adminPort},`;
+  //   adminPorts.push(adminPort);
+  // }
+  // generateArgs.push('--force-admin-ports', adminPortsString.slice(0, adminPortsString.length - 1));
+
   generateArgs.push(happPath, 'network', 'mdns');
   // console.log('GENERATE ARGS: ', generateArgs);
 
   let readyConductors = 0;
-  const portsInfo: Record<number, PortsInfo> = {};
   const sandboxPaths: Array<string> = [];
 
   const sandboxHandle = childProcess.spawn('hc', generateArgs);
@@ -154,15 +158,9 @@ async function spawnSandboxes(
 
         sandboxPaths.push(sanboxPath);
       }
-      if (line.includes('Conductor launched')) {
-        // hc-sandbox: Conductor launched #!1 {"admin_port":37045,"app_ports":[]}
-        const split1 = line.split('{');
-        const ports: PortsInfo = JSON.parse(`{${split1[1]}`);
-        const conductorNum = split1[0].split('#!')[1].trim();
-        portsInfo[conductorNum] = ports;
-        // hc-sandbox: Conductor launched #!1 {"admin_port":32805,"app_ports":[45309]}
+      if (line.includes('Running conductor on admin port')) {
         readyConductors += 1;
-        if (readyConductors === nAgents) resolve([sandboxHandle, sandboxPaths, portsInfo]);
+        if (readyConductors === nAgents) resolve([sandboxHandle, sandboxPaths, appPorts]);
       }
     });
     sandboxHandle.stderr.pipe(split()).on('data', async (line: string) => {
@@ -190,11 +188,13 @@ app.whenReady().then(async () => {
     );
   }
 
-  const [sandboxHandle, sandboxPaths, portsInfo] = await spawnSandboxes(
+  const [sandboxHandle, sandboxPaths, appPorts] = await spawnSandboxes(
     CLI_OPTS.numAgents,
     happTargetDir ? happTargetDir : CLI_OPTS.happOrWebhappPath.path,
     CLI_OPTS.appId,
   );
+
+  console.log('Got app ports: ', appPorts);
 
   const lairUrls: string[] = [];
   sandboxPaths.forEach((sandbox) => {
@@ -221,15 +221,14 @@ app.whenReady().then(async () => {
   for (var i = 0; i < cli.opts().numAgents; i++) {
     const zomeCallSigner = await rustUtils.ZomeCallSigner.connect(lairUrls[i], 'pass');
 
-    const appPort = portsInfo[i].app_ports[0];
-    const appWs = await AppWebsocket.connect(new URL(`ws://127.0.0.1:${appPort}`));
+    const appWs = await AppWebsocket.connect(new URL(`ws://127.0.0.1:${appPorts[i]}`));
     const appInfo = await appWs.appInfo({ installed_app_id: CLI_OPTS.appId });
     const happWindow = await createHappWindow(
       CLI_OPTS.uiSource,
       CLI_OPTS.happOrWebhappPath,
       CLI_OPTS.appId,
       i + 1,
-      appPort,
+      appPorts[i],
       DATA_ROOT_DIR,
     );
     WINDOW_INFO_MAP[happWindow.webContents.id] = {
