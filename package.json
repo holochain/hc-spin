@@ -28,6 +28,7 @@
     "electron-context-menu": "3.6.1",
     "get-port": "7.0.0",
     "@holochain/hc-spin-rust-utils": "0.200.2",
+    "@msgpack/msgpack": "^2.8.0",
     "nanoid": "5.0.4",
     "split": "1.0.1"
   },
