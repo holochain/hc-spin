@@ -18,7 +18,7 @@ const cli = new Command();
 
 cli
   .name('hc-spin')
-  .description('CLI to run Holochain aps during development.')
+  .description('CLI to run Holochain apps during development.')
   .version(`0.100.0 (for holochain 0.1.x)`)
   .argument(
     '<path>',
@@ -43,6 +43,21 @@ cli
 cli.parse();
 // console.log('Got CLI opts: ', cli.opts());
 // console.log('Got CLI args: ', cli.args);
+
+// In nix shell and on Windows SIGINT does not seem to be emitted so it is read from the command line instead.
+// https://stackoverflow.com/questions/10021373/what-is-the-windows-equivalent-of-process-onsigint-in-node-js
+const rl = require('readline').createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+rl.on('SIGINT', function () {
+  process.emit('SIGINT');
+});
+
+process.on('SIGINT', () => {
+  app.quit();
+});
 
 // Garbage collect unused directories of previous runs
 const files = fs.readdirSync(app.getPath('temp'));
@@ -123,7 +138,6 @@ async function spawnSandboxes(
   let readyConductors = 0;
   const portsInfo: Record<number, PortsInfo> = {};
   const sandboxPaths: Array<string> = [];
-  const lairUrls: string[] = [];
 
   const sandboxHandle = childProcess.spawn('hc', generateArgs);
   sandboxHandle.stdin.write('pass');
@@ -139,10 +153,6 @@ async function spawnSandboxes(
           .trim();
 
         sandboxPaths.push(sanboxPath);
-      }
-      if (line.includes('lair-keystore connection_url')) {
-        const lairKeystoreUrl = line.split('#')[2].trim();
-        lairUrls.push(lairKeystoreUrl);
       }
       if (line.includes('Conductor launched')) {
         // hc-sandbox: Conductor launched #!1 {"admin_port":37045,"app_ports":[]}
@@ -239,9 +249,7 @@ app.whenReady().then(async () => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  app.quit();
 });
 
 app.on('quit', () => {
