@@ -8,6 +8,14 @@
     "type": "git",
     "url": "git+https://github.com/holochain/hc-spin.git"
   },
+  "keywords": [
+    "holochain",
+    "developer",
+    "tools",
+    "tooling",
+    "developer-tools",
+    "cli"
+  ],
   "license": "MIT",
   "main": "out/main/index.js",
   "bin": {
