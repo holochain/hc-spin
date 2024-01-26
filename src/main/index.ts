@@ -61,6 +61,21 @@ cli.parse();
 // console.log('Got CLI opts: ', cli.opts());
 // console.log('Got CLI args: ', cli.args);
 
+// In nix shell and on Windows SIGINT does not seem to be emitted so it is read from the command line instead.
+// https://stackoverflow.com/questions/10021373/what-is-the-windows-equivalent-of-process-onsigint-in-node-js
+const rl = require('readline').createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+rl.on('SIGINT', function () {
+  process.emit('SIGINT');
+});
+
+process.on('SIGINT', () => {
+  app.quit();
+});
+
 // Garbage collect unused directories of previous runs
 const files = fs.readdirSync(app.getPath('temp'));
 const hcSpinFolders = files.filter((file) => file.startsWith(`hc-spin-`));
