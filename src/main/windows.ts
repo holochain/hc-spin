@@ -67,12 +67,12 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
   } else {
     try {
       const iconResponse = await net.fetch(`http://127.0.0.1:${uiSource.port}/icon.png`);
-      const buffer = await iconResponse.arrayBuffer();
-      if (buffer.byteLength === 0 && agentNum === 1) {
+      if (iconResponse.status === 404 && agentNum === 1) {
         console.warn(
           '\n\n+++++ WARNING +++++\n[hc-spin] No icon.png found. It is recommended to put an icon.png file (1024x1024 pixel) in the root of your UI assets directory which can be used by the Holochain Launcher.\n+++++++++++++++++++\n\n',
         );
       }
+      const buffer = await iconResponse.arrayBuffer();
       icon = nativeImage.createFromBuffer(Buffer.from(buffer));
     } catch (e) {
       console.error('Failed to get icon.png: ', e);

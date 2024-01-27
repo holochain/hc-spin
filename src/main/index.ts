@@ -173,7 +173,11 @@ async function spawnSandboxes(
     appPortsString += `${appPort},`;
     appPorts.push(appPort);
   }
-  generateArgs.push('--run', appPortsString.slice(0, appPortsString.length - 1));
+  if (nAgents === 1) {
+    generateArgs.push(`--run=${appPortsString.slice(0, appPortsString.length - 1)}`);
+  } else {
+    generateArgs.push('--run', appPortsString.slice(0, appPortsString.length - 1));
+  }
 
   // const adminPorts: number[] = [];
   // let adminPortsString = '';
