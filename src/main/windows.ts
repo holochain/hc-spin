@@ -107,18 +107,6 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
 
   if (openDevtools) happWindow.webContents.openDevTools();
 
-  happWindow.webContents.on('before-input-event', (e, input) => {
-    if (input.code === 'F12') {
-      e.preventDefault();
-      if (happWindow.webContents.isDevToolsOpened()) {
-        happWindow.webContents.closeDevTools();
-      } else {
-        happWindow.webContents.openDevTools();
-        happWindow.webContents.focus();
-      }
-    }
-  });
-
   if (uiSource.type === 'port') {
     try {
       // Check whether dev server is responsive and index.html exists
