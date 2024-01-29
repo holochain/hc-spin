@@ -1,4 +1,4 @@
-import { app, IpcMainInvokeEvent, ipcMain, protocol } from 'electron';
+import { app, IpcMainInvokeEvent, ipcMain, protocol, Menu } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import { nanoid } from 'nanoid';
@@ -19,6 +19,7 @@ import {
   randomNonce,
 } from '@holochain/client';
 import { validateCliArgs } from './validateArgs';
+import { menu } from './menu';
 
 const rustUtils = require('@holochain/hc-spin-rust-utils');
 
@@ -83,6 +84,8 @@ for (const folder of hcSpinFolders) {
 const DATA_ROOT_DIR = path.join(app.getPath('temp'), `hc-spin-${nanoid(8)}`);
 
 app.setPath('userData', path.join(DATA_ROOT_DIR, 'electron'));
+
+Menu.setApplicationMenu(menu);
 
 const CLI_OPTS = validateCliArgs(cli.args, cli.opts(), DATA_ROOT_DIR);
 
