@@ -46,7 +46,8 @@ cli
   .option(
     '--ui-port <number>',
     'Port pointing to a localhost dev server that serves your UI assets.',
-  );
+  )
+  .option('--open-devtools', 'Automatically open the devtools on startup.');
 
 cli.parse();
 // console.log('Got CLI opts: ', cli.opts());
@@ -270,7 +271,7 @@ app.whenReady().then(async () => {
 
   // open browser window for each sandbox
   //
-  for (var i = 0; i < cli.opts().numAgents; i++) {
+  for (var i = 0; i < CLI_OPTS.numAgents; i++) {
     const zomeCallSigner = await rustUtils.ZomeCallSigner.connect(lairUrls[i], 'pass');
 
     const appWs = await AppWebsocket.connect(new URL(`ws://127.0.0.1:${appPorts[i]}`));
@@ -282,6 +283,7 @@ app.whenReady().then(async () => {
       i + 1,
       appPorts[i],
       DATA_ROOT_DIR,
+      CLI_OPTS.openDevtools,
     );
     WINDOW_INFO_MAP[happWindow.webContents.id] = {
       agentPubKey: appInfo.agent_pub_key,

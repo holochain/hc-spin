@@ -23,6 +23,7 @@ export const createHappWindow = async (
   agentNum: number,
   appPort: number,
   appDataRootDir: string,
+  openDevtools: boolean,
 ): Promise<BrowserWindow> => {
   // TODO create mapping between installed-app-id's and window ids
   if (!appPort) throw new Error('App port not defined.');
@@ -104,7 +105,7 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
     evt.preventDefault();
   });
 
-  happWindow.webContents.openDevTools();
+  if (openDevtools) happWindow.webContents.openDevTools();
 
   if (uiSource.type === 'port') {
     try {
