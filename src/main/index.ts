@@ -55,7 +55,8 @@ cli
   .option(
     '--signaling-url <url>',
     'Url of the signaling server to use. By default, hc spin spins up a local development signaling server for you but this argument allows you to specify a custom one.',
-  );
+  )
+  .option('--open-devtools', 'Automatically open the devtools on startup.');
 
 cli.parse();
 // console.log('Got CLI opts: ', cli.opts());
@@ -317,11 +318,9 @@ app.whenReady().then(async () => {
 
   SANDBOX_PROCESSES.push(sandboxHandle);
 
-  // console.log('Got CLI_OPTS: ', CLI_OPTS);
-
   // open browser window for each sandbox
   //
-  for (var i = 0; i < cli.opts().numAgents; i++) {
+  for (var i = 0; i < CLI_OPTS.numAgents; i++) {
     const zomeCallSigner = await rustUtils.ZomeCallSigner.connect(lairUrls[i], 'pass');
 
     const appPort = portsInfo[i].app_ports[0];
@@ -334,6 +333,7 @@ app.whenReady().then(async () => {
       i + 1,
       appPort,
       DATA_ROOT_DIR,
+      CLI_OPTS.openDevtools,
     );
     WINDOW_INFO_MAP[happWindow.webContents.id] = {
       agentPubKey: appInfo.agent_pub_key,

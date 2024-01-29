@@ -11,6 +11,7 @@ export type CliOpts = {
   uiPort?: number;
   signalingUrl?: string;
   bootstrapUrl?: string;
+  openDevtools?: boolean;
 };
 
 export type CliOptsValidated = {
@@ -22,6 +23,7 @@ export type CliOptsValidated = {
   singalingUrl: string | undefined;
   bootstrapUrl: string | undefined;
   happOrWebhappPath: HappOrWebhappPath;
+  openDevtools: boolean;
 };
 
 export type HappOrWebhappPath = {
@@ -86,5 +88,6 @@ export function validateCliArgs(
     happOrWebhappPath: isHapp
       ? { type: 'happ', path: happOrWebhappPath }
       : { type: 'webhapp', path: happOrWebhappPath },
+    openDevtools: cliOpts.openDevtools ? true : false,
   };
 }
