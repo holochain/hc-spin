@@ -301,19 +301,19 @@ app.whenReady().then(async () => {
   // });
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-  app.quit();
+app.on('quit', () => {
+  cleanup();
 });
 
-app.on('quit', () => {
+function cleanup() {
+  console.log('[hc-spin]: cleaning up.');
   fs.writeFileSync(
     path.join(DATA_ROOT_DIR, '.abandoned'),
     "I'm not in use anymore by an active hc-spin process.",
   );
   // clean up sandboxes
-  SANDBOX_PROCESSES.forEach((handle) => handle.kill());
+  SANDBOX_PROCESSES.forEach((handle) => {
+    handle.kill('SIGINT');
+  });
   childProcess.spawnSync('hc', ['sandbox', 'clean']);
-});
+}
