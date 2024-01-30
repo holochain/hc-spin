@@ -1,6 +1,6 @@
 {
   "name": "@holochain/hc-spin",
-  "version": "0.100.4",
+  "version": "0.100.5",
   "description": "CLI to run Holochain aps during development.",
   "author": "matthme",
   "homepage": "https://developer.holochain.org",
