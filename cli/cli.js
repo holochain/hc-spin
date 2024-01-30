@@ -28,6 +28,8 @@ const child = spawn(
   },
 );
 
+child.on('error', (err) => console.error('[electron]: ERROR: ', err));
+
 // Handle child process exit
 child.on('exit', (code, _signal) => {
   process.exit(code);
