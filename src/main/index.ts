@@ -28,7 +28,7 @@ const cli = new Command();
 cli
   .name('hc-spin')
   .description('CLI to run Holochain aps during development.')
-  .version(`0.300.1 (for holochain 0.3.x)`)
+  .version(`0.300.2 (for holochain 0.3.x)`)
   .argument(
     '<path>',
     'Path to .webhapp or .happ file to launch. If a .happ file is passed, either a UI path must be specified via --ui-path or a port pointing to a localhost server via --ui-port',
