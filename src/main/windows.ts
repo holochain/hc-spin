@@ -67,7 +67,7 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
     icon = nativeImage.createFromPath(iconPath);
   } else {
     try {
-      const iconResponse = await net.fetch(`http://127.0.0.1:${uiSource.port}/icon.png`);
+      const iconResponse = await net.fetch(`http://localhost:${uiSource.port}/icon.png`);
       if (iconResponse.status === 404 && agentNum === 1) {
         console.warn(
           '\n\n+++++ WARNING +++++\n[hc-spin] No icon.png found. It is recommended to put an icon.png file (1024x1024 pixel) in the root of your UI assets directory which can be used by the Holochain Launcher.\n+++++++++++++++++++\n\n',
@@ -110,9 +110,9 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
   if (uiSource.type === 'port') {
     try {
       // Check whether dev server is responsive and index.html exists
-      await net.fetch(`http://127.0.0.1:${uiSource.port}/index.html`);
+      await net.fetch(`http://localhost:${uiSource.port}/index.html`);
     } catch (e) {
-      console.error(`No index.html file found at http://127.0.0.1:${uiSource.port}/index.html`, e);
+      console.error(`No index.html file found at http://localhost:${uiSource.port}/index.html`, e);
       if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
         happWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
       } else {
@@ -121,7 +121,7 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
       happWindow.show();
       return happWindow;
     }
-    await happWindow.loadURL(`http://127.0.0.1:${uiSource.port}`);
+    await happWindow.loadURL(`http://localhost:${uiSource.port}`);
   } else if (uiSource.type === 'path') {
     try {
       await happWindow.loadURL(`webhapp://webhappwindow/index.html`);
