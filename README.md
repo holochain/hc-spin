@@ -20,6 +20,14 @@ To install the latest version compatible with **holochain 0.2.x**:
 npm install --save-dev @holochain/hc-spin@">=0.200.0 <0.300.0"
 ```
 
+To install the latest version compatible with **holochain 0.3.x**:
+
+⚠️ Requires `@holochain/client 0.17.0-dev.5` or newer ⚠️
+
+```
+npm install --save-dev @holochain/hc-spin@">=0.300.0 <0.400.0"
+```
+
 ## Usage (holochain 0.2)
 
 ```
