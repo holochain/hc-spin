@@ -23,12 +23,15 @@ import { menu } from './menu';
 
 const rustUtils = require('@holochain/hc-spin-rust-utils');
 
+const cliPackageJsonPath = path.resolve(path.join(app.getAppPath(), '../../package.json'));
+const cliPackageJson = require(cliPackageJsonPath);
+
 const cli = new Command();
 
 cli
   .name('hc-spin')
   .description('CLI to run Holochain aps during development.')
-  .version(`0.200.11 (for holochain 0.2.x)`)
+  .version(`${cliPackageJson.version} (holochain ${cliPackageJson.holochainVersion})`)
   .argument(
     '<path>',
     'Path to .webhapp or .happ file to launch. If a .happ file is passed, either a UI path must be specified via --ui-path or a port pointing to a localhost server via --ui-port',
