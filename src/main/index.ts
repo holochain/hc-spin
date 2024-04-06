@@ -23,12 +23,15 @@ import { menu } from './menu';
 
 const rustUtils = require('@holochain/hc-spin-rust-utils');
 
+const cliPackageJsonPath = path.resolve(path.join(app.getAppPath(), '../../package.json'));
+const cliPackageJson = require(cliPackageJsonPath);
+
 const cli = new Command();
 
 cli
   .name('hc-spin')
   .description('CLI to run Holochain aps during development.')
-  .version(`0.300.3 (for holochain 0.3.x)`)
+  .version(`${cliPackageJson.version} (built for holochain ${cliPackageJson.holochainVersion})`)
   .argument(
     '<path>',
     'Path to .webhapp or .happ file to launch. If a .happ file is passed, either a UI path must be specified via --ui-path or a port pointing to a localhost server via --ui-port',
@@ -327,8 +330,14 @@ app.whenReady().then(async () => {
     const zomeCallSigner = await rustUtils.ZomeCallSigner.connect(lairUrls[i], 'pass');
 
     const appPort = portsInfo[i].app_ports[0];
-    const appWs = await AppWebsocket.connect(new URL(`ws://127.0.0.1:${appPort}`));
+    const appWs = await AppWebsocket.connect({
+      url: new URL(`ws://127.0.0.1:${appPort}`),
+      wsClientOptions: {
+        origin: 'hc-spin',
+      },
+    });
     const appInfo = await appWs.appInfo({ installed_app_id: CLI_OPTS.appId });
+    if (!appInfo) throw new Error('AppInfo is null.');
     const happWindow = await createHappWindow(
       CLI_OPTS.uiSource,
       CLI_OPTS.happOrWebhappPath,
