@@ -331,7 +331,7 @@ app.whenReady().then(async () => {
 
     const appPort = portsInfo[i].app_ports[0];
     const appWs = await AppWebsocket.connect({
-      url: new URL(`ws://127.0.0.1:${appPort}`),
+      url: new URL(`ws://localhost:${appPort}`),
       wsClientOptions: {
         origin: 'hc-spin',
       },
