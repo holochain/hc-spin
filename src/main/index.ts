@@ -330,8 +330,9 @@ app.whenReady().then(async () => {
     const zomeCallSigner = await rustUtils.ZomeCallSigner.connect(lairUrls[i], 'pass');
 
     const appPort = portsInfo[i].app_ports[0];
-    const appWs = await AppWebsocket.connect(new URL(`ws://127.0.0.1:${appPort}`));
+    const appWs = await AppWebsocket.connect(new URL(`ws://localhost:${appPort}`));
     const appInfo = await appWs.appInfo({ installed_app_id: CLI_OPTS.appId });
+    if (!appInfo) throw new Error('AppInfo undefined.');
     const happWindow = await createHappWindow(
       CLI_OPTS.uiSource,
       CLI_OPTS.happOrWebhappPath,

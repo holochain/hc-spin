@@ -1,6 +1,6 @@
 {
   "name": "@holochain/hc-spin",
-  "version": "0.200.11",
+  "version": "0.200.12",
   "holochainVersion": "0.2.x",
   "description": "CLI to run Holochain aps during development.",
   "author": "matthme",
@@ -35,7 +35,7 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
-    "@holochain/client": "^0.16.3",
+    "@holochain/client": "^0.16.11",
     "@holochain/hc-spin-rust-utils": "^0.200.3",
     "@msgpack/msgpack": "^2.8.0",
     "commander": "11.1.0",
