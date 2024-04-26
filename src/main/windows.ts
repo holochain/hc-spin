@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import url from 'url';
-import { InstalledAppId } from '@holochain/client';
+import { AppAuthenticationToken, InstalledAppId } from '@holochain/client';
 import { BrowserWindow, NativeImage, nativeImage, net, session, shell } from 'electron';
 import { is } from '@electron-toolkit/utils';
 import { HappOrWebhappPath } from './validateArgs';
@@ -22,6 +22,7 @@ export const createHappWindow = async (
   appId: InstalledAppId,
   agentNum: number,
   appPort: number,
+  appAuthToken: AppAuthenticationToken,
   appDataRootDir: string,
   openDevtools: boolean,
 ): Promise<BrowserWindow> => {
@@ -47,7 +48,7 @@ export const createHappWindow = async (
 electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
   APP_INTERFACE_PORT: ${appPort},
   INSTALLED_APP_ID: "${appId}",
-  FRAMEWORK: "electron"
+  APP_INTERFACE_TOKEN: [${appAuthToken}],
 });
     `;
 

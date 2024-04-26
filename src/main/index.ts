@@ -10,6 +10,7 @@ import { ZomeCallNapi, ZomeCallSigner, ZomeCallUnsignedNapi } from '@holochain/h
 import { createHappWindow } from './windows';
 import getPort from 'get-port';
 import {
+  AdminWebsocket,
   AgentPubKey,
   AppWebsocket,
   CallZomeRequest,
@@ -329,14 +330,28 @@ app.whenReady().then(async () => {
   for (var i = 0; i < CLI_OPTS.numAgents; i++) {
     const zomeCallSigner = await rustUtils.ZomeCallSigner.connect(lairUrls[i], 'pass');
 
+    const adminPort = portsInfo[i].admin_port;
+    const adminWs = await AdminWebsocket.connect({
+      url: new URL(`ws://localhost:${adminPort}`),
+      wsClientOptions: {
+        origin: 'hc-spin',
+      },
+    });
+
+    const appAuthTokenResponse = await adminWs.issueAppAuthenticationToken({
+      installed_app_id: CLI_OPTS.appId,
+      single_use: false,
+    });
+
     const appPort = portsInfo[i].app_ports[0];
     const appWs = await AppWebsocket.connect({
       url: new URL(`ws://localhost:${appPort}`),
       wsClientOptions: {
         origin: 'hc-spin',
       },
+      token: appAuthTokenResponse.token,
     });
-    const appInfo = await appWs.appInfo({ installed_app_id: CLI_OPTS.appId });
+    const appInfo = await appWs.appInfo();
     if (!appInfo) throw new Error('AppInfo is null.');
     const happWindow = await createHappWindow(
       CLI_OPTS.uiSource,
@@ -344,6 +359,7 @@ app.whenReady().then(async () => {
       CLI_OPTS.appId,
       i + 1,
       appPort,
+      appAuthTokenResponse.token,
       DATA_ROOT_DIR,
       CLI_OPTS.openDevtools,
     );
