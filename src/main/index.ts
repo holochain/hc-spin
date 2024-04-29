@@ -341,6 +341,7 @@ app.whenReady().then(async () => {
     const appAuthTokenResponse = await adminWs.issueAppAuthenticationToken({
       installed_app_id: CLI_OPTS.appId,
       single_use: false,
+      expiry_seconds: 999999,
     });
 
     const appPort = portsInfo[i].app_ports[0];
