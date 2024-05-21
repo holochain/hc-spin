@@ -20,6 +20,21 @@ for (let i = 0; i < 7; i++) {
   }
 }
 
+// https://github.com/electron/electron/issues/17972
+if (process.platform === 'linux') {
+  let chromeSandboxPathStr = '../node_modules/electron/dist/chrome-sandbox';
+  // recursively look for electron binary in node_modules folder
+  for (let i = 0; i < 7; i++) {
+    const maybeChromeSandbox = path.resolve(__dirname, chromeSandboxPathStr);
+    if (fs.existsSync(maybeChromeSandbox)) {
+      fs.chmodSync(maybeChromeSandbox, 0o4755);
+      break;
+    } else {
+      chromeSandboxPathStr = '../' + chromeSandboxPathStr;
+    }
+  }
+}
+
 if (!electronBinary) {
   throw new Error('Failed to locate electron binary. __dirname: ', __dirname);
 }
