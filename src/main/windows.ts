@@ -88,6 +88,7 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
     title: `Agent ${agentNum} - ${appId}`,
     webPreferences: {
       preload: preloadPath,
+      sandbox: true,
       partition,
     },
   });
