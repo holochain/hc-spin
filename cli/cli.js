@@ -12,7 +12,7 @@ if (!electronBinary) {
   if (electronHandleTemp.stdout) {
     if (!electronHandleTemp.stdout.toString().startsWith('v29.')) {
       console.warn(
-        'WARNING: Found a globally installed electron version but it does not match the version requirements of hc-spin (v29.x). The electron binary from node_modules is used instead.',
+        'WARNING: Found a globally installed electron version but it does not match the version requirements of hc-spin (v29.x). The electron binary from node_modules will be used instead.',
       );
     } else {
       electronBinary = 'electron';
