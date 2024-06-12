@@ -1,4 +1,4 @@
-import { app, IpcMainInvokeEvent, ipcMain, protocol, Menu } from 'electron';
+import { app, IpcMainInvokeEvent, ipcMain, protocol, Menu, BrowserWindow } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import { nanoid } from 'nanoid';
@@ -119,6 +119,12 @@ contextMenu({
   showSaveImageAs: true,
   showSearchWithGoogle: false,
   showInspectElement: true,
+  append: (_defaultActions, _parameters, browserWindow) => [
+    {
+      label: 'Reload',
+      click: () => (browserWindow as BrowserWindow).reload(),
+    },
+  ],
 });
 
 const handleSignZomeCall = async (e: IpcMainInvokeEvent, request: CallZomeRequest) => {
