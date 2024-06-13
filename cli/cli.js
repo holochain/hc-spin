@@ -10,7 +10,7 @@ if (!electronBinary) {
   const electronHandleTemp = spawnSync('electron', ['--version']);
 
   if (electronHandleTemp.stdout) {
-    if (!electronHandleTemp.stdout.toString().startsWith('v29.')) {
+    if (!electronHandleTemp.stdout.toString().startsWith('v###REPLACE_AT_BUILD_TIME###')) {
       console.warn(
         'WARNING: Found a globally installed electron version but it does not match the version requirements of hc-spin (v29.x). The electron binary from node_modules will be used instead.',
       );
