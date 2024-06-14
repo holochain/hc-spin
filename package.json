@@ -1,7 +1,7 @@
 {
   "name": "@holochain/hc-spin",
   "version": "0.300.2-dev.6",
-  "holochainVersion": "0.3.0-beta-dev.44",
+  "holochainVersion": "0.3.1",
   "description": "CLI to run Holochain aps during development.",
   "author": "matthme",
   "homepage": "https://developer.holochain.org",
@@ -30,7 +30,7 @@
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
-    "build": "rimraf dist && npm run typecheck && electron-vite build && mv ./out ./dist && cp ./cli/cli.js ./dist/cli.js"
+    "build": "rimraf dist && npm run typecheck && electron-vite build && mv ./out ./dist && cp ./cli/cli.js ./dist/cli.js && node ./scripts/replace-electron-version.js"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
@@ -40,7 +40,7 @@
     "@msgpack/msgpack": "^2.8.0",
     "bufferutil": "4.0.8",
     "commander": "11.1.0",
-    "electron": "^28.1.1",
+    "electron": "^29.3.1",
     "electron-context-menu": "3.6.1",
     "get-port": "7.0.0",
     "nanoid": "5.0.4",
