@@ -112,7 +112,7 @@ const WINDOW_INFO_MAP: Record<
 protocol.registerSchemesAsPrivileged([
   {
     scheme: 'webhapp',
-    privileges: { standard: true },
+    privileges: { standard: true, secure: true, stream: true },
   },
 ]);
 
