@@ -6,7 +6,7 @@ import { Command, Option } from 'commander';
 import contextMenu from 'electron-context-menu';
 import split from 'split';
 import * as childProcess from 'child_process';
-import { ZomeCallNapi, ZomeCallSigner, ZomeCallUnsignedNapi } from '@holochain/hc-spin-rust-utils';
+import { ZomeCallSigner } from '@holochain/hc-spin-rust-utils';
 import { createHappWindow } from './windows';
 import getPort from 'get-port';
 import {
@@ -21,6 +21,7 @@ import {
 import { validateCliArgs } from './validateArgs';
 import { encode } from '@msgpack/msgpack';
 import { menu } from './menu';
+import { sha512 } from 'js-sha512';
 
 const rustUtils = require('@holochain/hc-spin-rust-utils');
 
@@ -128,50 +129,42 @@ contextMenu({
   ],
 });
 
-const handleSignZomeCall = async (e: IpcMainInvokeEvent, request: CallZomeRequest) => {
+const handleSignZomeCall = async (
+  e: IpcMainInvokeEvent,
+  request: CallZomeRequest,
+): Promise<CallZomeRequestSigned> => {
   const windowInfo = WINDOW_INFO_MAP[e.sender.id];
+  if (!request.provenance)
+    return Promise.reject(
+      'Call zome request has provenance field not set. This should be set by the js-client.',
+    );
   if (request.provenance.toString() !== Array.from(windowInfo.agentPubKey).toString())
     return Promise.reject('Agent public key unauthorized.');
 
-  // console.log("Got zome call request: ", request);
-  const zomeCallUnsignedNapi: ZomeCallUnsignedNapi = {
-    provenance: Array.from(request.provenance),
-    cellId: [Array.from(request.cell_id[0]), Array.from(request.cell_id[1])],
-    zomeName: request.zome_name,
-    fnName: request.fn_name,
-    payload: Array.from(encode(request.payload)),
-    nonce: Array.from(await randomNonce()),
-    expiresAt: getNonceExpiration(),
+  const zomeCallToSign: CallZomeRequest = {
+    cell_id: request.cell_id,
+    zome_name: request.zome_name,
+    fn_name: request.fn_name,
+    payload: encode(request.payload),
+    provenance: request.provenance,
+    nonce: await randomNonce(),
+    expires_at: getNonceExpiration(),
   };
 
-  const zomeCallSignedNapi: ZomeCallNapi =
-    await windowInfo.zomeCallSigner.signZomeCall(zomeCallUnsignedNapi);
+  const zomeCallBytes = encode(zomeCallToSign);
+  const bytesHash = sha512.array(zomeCallBytes);
 
-  const zomeCallSigned: CallZomeRequestSigned = {
-    provenance: Uint8Array.from(zomeCallSignedNapi.provenance),
-    cap_secret: null,
-    cell_id: [
-      Uint8Array.from(zomeCallSignedNapi.cellId[0]),
-      Uint8Array.from(zomeCallSignedNapi.cellId[1]),
-    ],
-    zome_name: zomeCallSignedNapi.zomeName,
-    fn_name: zomeCallSignedNapi.fnName,
-    payload: Uint8Array.from(zomeCallSignedNapi.payload),
-    signature: Uint8Array.from(zomeCallSignedNapi.signature),
-    expires_at: zomeCallSignedNapi.expiresAt,
-    nonce: Uint8Array.from(zomeCallSignedNapi.nonce),
+  const signature: number[] = await windowInfo.zomeCallSigner.signZomeCall(
+    bytesHash,
+    Array.from(request.provenance),
+  );
+
+  const signedZomeCall: CallZomeRequestSigned = {
+    bytes: zomeCallBytes,
+    signature: Uint8Array.from(signature),
   };
 
-  return zomeCallSigned;
-};
-
-// https://github.com/holochain/holochain-client-js/issues/221
-const handleSignZomeCallLegacy = async (e: IpcMainInvokeEvent, request: ZomeCallUnsignedNapi) => {
-  const windowInfo = WINDOW_INFO_MAP[e.sender.id];
-  if (request.provenance.toString() !== Array.from(windowInfo.agentPubKey).toString())
-    return Promise.reject('Agent public key unauthorized.');
-
-  return windowInfo.zomeCallSigner.signZomeCall(request);
+  return signedZomeCall;
 };
 
 async function startLocalServices(): Promise<[string, string]> {
@@ -288,7 +281,6 @@ async function spawnSandboxes(
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
   ipcMain.handle('sign-zome-call', handleSignZomeCall);
-  ipcMain.handle('sign-zome-call-legacy', handleSignZomeCallLegacy);
 
   let happTargetDir: string | undefined;
   // TODO unpack assets to UI dir if webhapp is passed
