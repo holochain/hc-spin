@@ -4,22 +4,6 @@ CLI to run Holochain apps in development mode.
 
 ## Installation
 
-To install the latest version compatible with **holochain 0.1.x**:
-
-⚠️ Requires `@holochain/client 0.12.6` or newer ⚠️
-
-```
-npm install --save-dev @holochain/hc-spin@">=0.100.0 <0.200.0"
-```
-
-To install the latest version compatible with **holochain 0.2.x**:
-
-⚠️ Requires `@holochain/client 0.16.2` or newer ⚠️
-
-```
-npm install --save-dev @holochain/hc-spin@">=0.200.0 <0.300.0"
-```
-
 To install the latest version compatible with **holochain 0.3.x**:
 
 ⚠️ Requires `@holochain/client 0.17.0-dev.5` or newer ⚠️
@@ -28,7 +12,15 @@ To install the latest version compatible with **holochain 0.3.x**:
 npm install --save-dev @holochain/hc-spin@">=0.300.0 <0.400.0"
 ```
 
-## Usage (holochain 0.2)
+To install the latest version compatible with **holochain 0.4.x**:
+
+⚠️ Requires `@holochain/client 0.18.0-rc.1` or newer ⚠️
+
+```
+npm install --save-dev @holochain/hc-spin@">=0.400.0 <0.500.0"
+```
+
+## Usage (holochain 0.4)
 
 ```
 Usage: hc-spin [options] <path>
@@ -52,6 +44,7 @@ Options:
   --ui-port <number>         Port pointing to a localhost dev server that serves your UI assets.
   --signaling-url <url>      Url of the signaling server to use. By default, hc spin spins up a local development signaling server for you
                              but this argument allows you to specify a custom one.
+  --open-devtools            Automatically open the devtools on startup.
   -h, --help                 display help for command
 ```
 
