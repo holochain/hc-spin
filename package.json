@@ -35,8 +35,8 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
-    "@holochain/client": "0.18.0-rc.1",
-    "@holochain/hc-spin-rust-utils": "0.400.0-rc.1",
+    "@holochain/client": "0.18.0",
+    "@holochain/hc-spin-rust-utils": "0.400.0",
     "@msgpack/msgpack": "^2.8.0",
     "bufferutil": "4.0.8",
     "commander": "11.1.0",
