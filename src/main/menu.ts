@@ -54,12 +54,12 @@ export const menu = Menu.buildFromTemplate([
       {
         label: "Undo",
         role: "undo",
-        accelerator: "Cmd+Z"
+        accelerator: "CommandOrControl+Z"
       },
       {
         label: "Redo",
         role: "redo",
-        accelerator: "Cmd+Shift+Z"
+        accelerator: "CommandOrControl+Shift+Z"
       },
       {
         type: "separator"
@@ -67,22 +67,22 @@ export const menu = Menu.buildFromTemplate([
       {
         label: "Cut",
         role: "cut",
-        accelerator: "Cmd+X"
+        accelerator: "CommandOrControl+X"
       },
       {
         label: "Copy",
         role: "copy",
-        accelerator: "Cmd+C"
+        accelerator: "CommandOrControl+C"
       },
       {
         label: "Paste",
         role: "paste",
-        accelerator: "Cmd+V"
+        accelerator: "CommandOrControl+V"
       },
       {
         label: "Select All",
         role: "selectAll",
-        accelerator: "Cmd+A"
+        accelerator: "CommandOrControl+A"
       }
     ]
   }
