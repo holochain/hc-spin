@@ -168,24 +168,24 @@ const handleSignZomeCall = async (
 };
 
 async function startLocalServices(): Promise<[string, string]> {
-  const localServicesHandle = childProcess.spawn('hc', ['run-local-services']);
+  const localServicesHandle = childProcess.spawn('kitsune2-bootstrap-srv');
   return new Promise((resolve) => {
     let bootStrapUrl;
     let signalUrl;
     let bootstrapRunning = false;
     let signalRunnig = false;
     localServicesHandle.stdout.pipe(split()).on('data', async (line: string) => {
-      console.log(`[hc-spin] | [hc run-local-services]: ${line}`);
-      if (line.includes('HC BOOTSTRAP - ADDR:')) {
-        bootStrapUrl = line.split('# HC BOOTSTRAP - ADDR:')[1].trim();
+      console.log(`[hc-spin] | [kitsune2-bootstrap-srv]: ${line}`);
+      if (line.includes('#kitsune2_bootstrap_srv#listening#')) {
+        const hostAndPort = line
+          .split('#kitsune2_bootstrap_srv#listening#')[1]
+          .trim()
+          .replace('#', '');
+        bootStrapUrl = `http://${hostAndPort}`;
+        signalUrl = `ws://${hostAndPort}`;
       }
-      if (line.includes('HC SIGNAL - ADDR:')) {
-        signalUrl = line.split('# HC SIGNAL - ADDR:')[1].trim();
-      }
-      if (line.includes('HC BOOTSTRAP - RUNNING')) {
+      if (line.includes('#kitsune2_bootstrap_srv#running#')) {
         bootstrapRunning = true;
-      }
-      if (line.includes('HC SIGNAL - RUNNING')) {
         signalRunnig = true;
       }
       if (bootstrapRunning && signalRunnig) resolve([bootStrapUrl, signalUrl]);
