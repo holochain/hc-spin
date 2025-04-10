@@ -1,0 +1,19 @@
+name: 'test'
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  publish-happ:
+    runs-on: ubuntu-22.04
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies and build
+        run: yarn && yarn:build
