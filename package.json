@@ -53,7 +53,7 @@
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@types/node": "^18.19.5",
     "electron-builder": "^24.9.1",
-    "electron-vite": "https://github.com/matthme/electron-vite.git#forward-cli-args-dist",
+    "electron-vite": "2.3.0",
     "eslint": "^8.56.0",
     "prettier": "^3.1.1",
     "rimraf": "5.0.5",
