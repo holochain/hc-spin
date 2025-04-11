@@ -179,8 +179,7 @@ async function startLocalServices(): Promise<[string, string]> {
       if (line.includes('#kitsune2_bootstrap_srv#listening#')) {
         const hostAndPort = line
           .split('#kitsune2_bootstrap_srv#listening#')[1]
-          .trim()
-          .replace('#', '');
+          .split("#")[0]
         bootStrapUrl = `http://${hostAndPort}`;
         signalUrl = `ws://${hostAndPort}`;
       }
