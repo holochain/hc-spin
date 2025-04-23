@@ -468,10 +468,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.1.tgz#de633db3ec2ef6a3c89e2f19038063e8a122e2c2"
   integrity sha512-d9zaMRSTIKDLhctzH12MtXvJKSSUhaHcjV+2Z+GK+EEY7XKpP5yR4x+N3TAcHTcu963nIr+TMcCb4DBCYX1z6Q==
 
-"@holochain/client@0.19.0-rc.0":
-  version "0.19.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@holochain/client/-/client-0.19.0-rc.0.tgz#7e4f510a2518aca19ab72097117bbd01c1a45457"
-  integrity sha512-MFSsCy1BrtDlwlFSrt9ARa45c4QrplobRAZPuhqdHhTupI29ty6wj2Z44/G9XdhTv69xMCgq3Velx6GARGN+Cw==
+"@holochain/client@0.19.0":
+  version "0.19.0"
+  resolved "https://registry.yarnpkg.com/@holochain/client/-/client-0.19.0.tgz#5bf3cf9ef58f2da9a060b31160daf197cfaf2346"
+  integrity sha512-LAiuQwyAQlLJp5Y0uT7EKuWy2AoCxMLdTECCLOs8ALADZzhNykFi2rmeC9hzskPXMR441bOhHPBWynqzQH95Ew==
   dependencies:
     "@bitgo/blake2b" "^3.2.4"
     "@msgpack/msgpack" "^3.1.1"
