@@ -177,9 +177,7 @@ async function startLocalServices(): Promise<[string, string]> {
     localServicesHandle.stdout.pipe(split()).on('data', async (line: string) => {
       console.log(`[hc-spin] | [kitsune2-bootstrap-srv]: ${line}`);
       if (line.includes('#kitsune2_bootstrap_srv#listening#')) {
-        const hostAndPort = line
-          .split('#kitsune2_bootstrap_srv#listening#')[1]
-          .split("#")[0]
+        const hostAndPort = line.split('#kitsune2_bootstrap_srv#listening#')[1].split('#')[0];
         bootStrapUrl = `http://${hostAndPort}`;
         signalUrl = `ws://${hostAndPort}`;
       }
@@ -187,7 +185,8 @@ async function startLocalServices(): Promise<[string, string]> {
         bootstrapRunning = true;
         signalRunnig = true;
       }
-      if (bootstrapRunning && signalRunnig) resolve([bootStrapUrl, signalUrl]);
+      if (bootstrapRunning && signalRunnig && bootStrapUrl && signalUrl)
+        resolve([bootStrapUrl, signalUrl]);
     });
     localServicesHandle.stderr.pipe(split()).on('data', async (line: string) => {
       console.log(`[hc-spin] | [hc run-local-services] ERROR: ${line}`);
