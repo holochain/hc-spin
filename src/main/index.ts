@@ -32,7 +32,7 @@ const cli = new Command();
 
 cli
   .name('hc-spin')
-  .description('CLI to run Holochain aps during development.')
+  .description('CLI to run Holochain apps during development.')
   .version(`${cliPackageJson.version} (built for holochain ${cliPackageJson.holochainVersion})`)
   .argument(
     '<path>',
