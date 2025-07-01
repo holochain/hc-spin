@@ -25,7 +25,7 @@ npm install --save-dev @holochain/hc-spin@">=0.500.0 <0.600.0"
 ```
 Usage: hc-spin [options] <path>
 
-CLI to run Holochain aps during development.
+CLI to run Holochain apps during development.
 
 Arguments:
   path                       Path to .webhapp or .happ file to launch. If a .happ file is passed, either a UI path must be specified via
