@@ -364,6 +364,7 @@ app.whenReady().then(async () => {
       agentPubKey: appInfo.agent_pub_key,
       zomeCallSigner,
     };
+    happWindow.show();
   }
 
   // app.on('activate', function () {

@@ -119,7 +119,6 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
       } else {
         happWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
       }
-      happWindow.show();
       return happWindow;
     }
     await happWindow.loadURL(`http://localhost:${uiSource.port}`);
@@ -138,15 +137,11 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
             : path.join(__dirname, '../renderer/indexNotFound2.html');
         happWindow.loadFile(notFoundPath);
       }
-
-      happWindow.show();
       return happWindow;
     }
   } else {
     throw new Error('Unsupported uiSource type: ', (uiSource as any).type);
   }
-
-  happWindow.show();
 
   return happWindow;
 };
