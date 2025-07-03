@@ -25,6 +25,7 @@ export const createHappWindow = async (
   appAuthToken: AppAuthenticationToken,
   appDataRootDir: string,
   openDevtools: boolean,
+  onWindowCreated: (happWindow: BrowserWindow) => void = () => {},
 ): Promise<BrowserWindow> => {
   // TODO create mapping between installed-app-id's and window ids
   if (!appPort) throw new Error('App port not defined.');
@@ -92,6 +93,8 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
       partition,
     },
   });
+
+  onWindowCreated(happWindow);
 
   const [windowPositionX, windowPositionY] = happWindow.getPosition();
   const windowPositionXMoved = windowPositionX + agentNum * 20;
