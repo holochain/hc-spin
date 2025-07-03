@@ -25,6 +25,7 @@ export const createHappWindow = async (
   appAuthToken: AppAuthenticationToken,
   appDataRootDir: string,
   openDevtools: boolean,
+  onWindowCreated: (happWindow: BrowserWindow) => void = () => {},
 ): Promise<BrowserWindow> => {
   // TODO create mapping between installed-app-id's and window ids
   if (!appPort) throw new Error('App port not defined.');
@@ -93,6 +94,8 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
     },
   });
 
+  onWindowCreated(happWindow);
+
   const [windowPositionX, windowPositionY] = happWindow.getPosition();
   const windowPositionXMoved = windowPositionX + agentNum * 20;
   const windowPositionYMoved = windowPositionY + agentNum * 20;
@@ -119,7 +122,6 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
       } else {
         happWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
       }
-      happWindow.show();
       return happWindow;
     }
     await happWindow.loadURL(`http://localhost:${uiSource.port}`);
@@ -138,15 +140,11 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
             : path.join(__dirname, '../renderer/indexNotFound2.html');
         happWindow.loadFile(notFoundPath);
       }
-
-      happWindow.show();
       return happWindow;
     }
   } else {
     throw new Error('Unsupported uiSource type: ', (uiSource as any).type);
   }
-
-  happWindow.show();
 
   return happWindow;
 };

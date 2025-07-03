@@ -359,11 +359,14 @@ app.whenReady().then(async () => {
       appAuthTokenResponse.token,
       DATA_ROOT_DIR,
       CLI_OPTS.openDevtools,
+      (happWindow) => {
+        WINDOW_INFO_MAP[happWindow.webContents.id] = {
+          agentPubKey: appInfo.agent_pub_key,
+          zomeCallSigner,
+        };
+      },
     );
-    WINDOW_INFO_MAP[happWindow.webContents.id] = {
-      agentPubKey: appInfo.agent_pub_key,
-      zomeCallSigner,
-    };
+    happWindow.show();
   }
 
   // app.on('activate', function () {
