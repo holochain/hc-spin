@@ -7,7 +7,7 @@ import contextMenu from 'electron-context-menu';
 import split from 'split';
 import * as childProcess from 'child_process';
 import { ZomeCallSigner } from '@holochain/hc-spin-rust-utils';
-import { createHappWindow } from './windows';
+import { createHappWindow, loadHappWindow } from './windows';
 import getPort from 'get-port';
 import {
   AdminWebsocket,
@@ -352,18 +352,26 @@ app.whenReady().then(async () => {
     if (!appInfo) throw new Error('AppInfo is null.');
     const happWindow = await createHappWindow(
       CLI_OPTS.uiSource,
-      CLI_OPTS.happOrWebhappPath,
       CLI_OPTS.appId,
       i + 1,
       appPort,
       appAuthTokenResponse.token,
       DATA_ROOT_DIR,
-      CLI_OPTS.openDevtools,
     );
+    // We need to add the window to the window map before loading its UI, otherwise
+    // zome calls can be made before handleSignZomeCall() can verify that the
+    // zome call is made from an authorized window (https://github.com/holochain/hc-spin/issues/30)
     WINDOW_INFO_MAP[happWindow.webContents.id] = {
       agentPubKey: appInfo.agent_pub_key,
       zomeCallSigner,
     };
+    await loadHappWindow(
+      happWindow,
+      CLI_OPTS.uiSource,
+      CLI_OPTS.happOrWebhappPath,
+      i + 1,
+      CLI_OPTS.openDevtools,
+    );
   }
 
   // app.on('activate', function () {

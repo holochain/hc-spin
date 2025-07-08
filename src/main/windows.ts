@@ -16,16 +16,14 @@ export type UISource =
       port: number;
     };
 
-export const createHappWindow = async (
+export async function createHappWindow(
   uiSource: UISource,
-  happOrWebhappPath: HappOrWebhappPath,
   appId: InstalledAppId,
   agentNum: number,
   appPort: number,
   appAuthToken: AppAuthenticationToken,
   appDataRootDir: string,
-  openDevtools: boolean,
-): Promise<BrowserWindow> => {
+): Promise<BrowserWindow> {
   // TODO create mapping between installed-app-id's and window ids
   if (!appPort) throw new Error('App port not defined.');
 
@@ -81,7 +79,7 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
     }
   }
 
-  const happWindow = new BrowserWindow({
+  return new BrowserWindow({
     width: 1200,
     height: 800,
     show: false,
@@ -92,7 +90,15 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
       partition,
     },
   });
+}
 
+export async function loadHappWindow(
+  happWindow: BrowserWindow,
+  uiSource: UISource,
+  happOrWebhappPath: HappOrWebhappPath,
+  agentNum: number,
+  openDevtools: boolean,
+): Promise<void> {
   const [windowPositionX, windowPositionY] = happWindow.getPosition();
   const windowPositionXMoved = windowPositionX + agentNum * 20;
   const windowPositionYMoved = windowPositionY + agentNum * 20;
@@ -119,8 +125,7 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
       } else {
         happWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
       }
-      happWindow.show();
-      return happWindow;
+      return;
     }
     await happWindow.loadURL(`http://localhost:${uiSource.port}`);
   } else if (uiSource.type === 'path') {
@@ -138,18 +143,14 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
             : path.join(__dirname, '../renderer/indexNotFound2.html');
         happWindow.loadFile(notFoundPath);
       }
-
-      happWindow.show();
-      return happWindow;
+      return;
     }
   } else {
     throw new Error('Unsupported uiSource type: ', (uiSource as any).type);
   }
 
   happWindow.show();
-
-  return happWindow;
-};
+}
 
 export function setLinkOpenHandlers(browserWindow: BrowserWindow): void {
   // links in happ windows should open in the system default application
