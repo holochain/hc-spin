@@ -311,6 +311,7 @@ app.whenReady().then(async () => {
     CLI_OPTS.bootstrapUrl ? CLI_OPTS.bootstrapUrl : bootstrapUrl,
     CLI_OPTS.singalingUrl ? CLI_OPTS.singalingUrl : signalingUrl,
     CLI_OPTS.appId,
+    CLI_OPTS.networkSeed,
   );
 
   const lairUrls: string[] = [];
