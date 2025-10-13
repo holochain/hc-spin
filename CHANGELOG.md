@@ -7,8 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 ### Fixed
 ### Changed
-- Bumped to holochain 0.6.0-dev.28
 ### Removed
+
+## 2025-10-13: v0.600.0-dev.0
+
+### Changed
+- Bumped to holochain 0.6.0-dev.28
 
 ## 2025-07-31: v0.500.3
 ### Fixed
