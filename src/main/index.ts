@@ -52,6 +52,12 @@ cli
       parseInt,
     ),
   )
+  .addOption(
+    new Option(
+      '-z, --num-zero-arc-agents <number>',
+      'How many zero-arc agents to spawn.',
+    ).argParser(parseInt),
+  )
   .option('--network-seed <string>', 'Install the app with a specific network seed.')
   .option('--ui-path <path>', "Path to the folder containing the index.html of the webhapp's UI.")
   .option(
@@ -206,6 +212,7 @@ async function spawnSandboxes(
   signalUrl: string,
   appId: string,
   networkSeed?: string,
+  targetArcFactor?: number,
 ): Promise<
   [childProcess.ChildProcessWithoutNullStreams, Array<string>, Record<number, PortsInfo>]
 > {
@@ -230,7 +237,13 @@ async function spawnSandboxes(
     generateArgs.push('--network-seed');
     generateArgs.push(networkSeed);
   }
-  generateArgs.push(happPath, 'network', '--bootstrap', bootStrapUrl, 'webrtc', signalUrl);
+  generateArgs.push(happPath, 'network');
+
+  if (targetArcFactor !== undefined) {
+    generateArgs.push('--target-arc-factor', targetArcFactor.toString());
+  }
+
+  generateArgs.push('--bootstrap', bootStrapUrl, 'webrtc', signalUrl);
   // console.log('GENERATE ARGS: ', generateArgs);
 
   let readyConductors = 0;
@@ -295,17 +308,47 @@ app.whenReady().then(async () => {
 
   const [bootstrapUrl, signalingUrl] = await startLocalServices();
 
-  const [sandboxHandle, sandboxPaths, portsInfo] = await spawnSandboxes(
-    CLI_OPTS.numAgents,
-    happTargetDir ? happTargetDir : CLI_OPTS.happOrWebhappPath.path,
-    CLI_OPTS.bootstrapUrl ? CLI_OPTS.bootstrapUrl : bootstrapUrl,
-    CLI_OPTS.singalingUrl ? CLI_OPTS.singalingUrl : signalingUrl,
-    CLI_OPTS.appId,
-    CLI_OPTS.networkSeed,
-  );
+  // Spawn full-arc agents
+  let fullArcSandboxPaths: Array<string> = [];
+  let fullArcPortsInfo: Record<number, PortsInfo> = {};
 
+  if (CLI_OPTS.numAgents > 0) {
+    const [sandboxHandle, sandboxPaths, portsInfo] = await spawnSandboxes(
+      CLI_OPTS.numAgents,
+      happTargetDir ? happTargetDir : CLI_OPTS.happOrWebhappPath.path,
+      CLI_OPTS.bootstrapUrl ? CLI_OPTS.bootstrapUrl : bootstrapUrl,
+      CLI_OPTS.singalingUrl ? CLI_OPTS.singalingUrl : signalingUrl,
+      CLI_OPTS.appId,
+      CLI_OPTS.networkSeed,
+    );
+    fullArcSandboxPaths = sandboxPaths;
+    fullArcPortsInfo = portsInfo;
+    SANDBOX_PROCESSES.push(sandboxHandle);
+  }
+
+  // Spawn zero-arc agents
+  let zeroArcSandboxPaths: Array<string> = [];
+  let zeroArcPortsInfo: Record<number, PortsInfo> = {};
+
+  if (CLI_OPTS.numZeroArcAgents > 0) {
+    const [sandboxHandle, sandboxPaths, portsInfo] = await spawnSandboxes(
+      CLI_OPTS.numZeroArcAgents,
+      happTargetDir ? happTargetDir : CLI_OPTS.happOrWebhappPath.path,
+      CLI_OPTS.bootstrapUrl ? CLI_OPTS.bootstrapUrl : bootstrapUrl,
+      CLI_OPTS.singalingUrl ? CLI_OPTS.singalingUrl : signalingUrl,
+      CLI_OPTS.appId,
+      CLI_OPTS.networkSeed,
+      0, // target_arc_factor = 0 for zero-arc agents
+    );
+    zeroArcSandboxPaths = sandboxPaths;
+    zeroArcPortsInfo = portsInfo;
+    SANDBOX_PROCESSES.push(sandboxHandle);
+  }
+
+  // Collect all sandbox paths and extract lair URLs
+  const allSandboxPaths = [...fullArcSandboxPaths, ...zeroArcSandboxPaths];
   const lairUrls: string[] = [];
-  sandboxPaths.forEach((sandbox) => {
+  allSandboxPaths.forEach((sandbox) => {
     const conductorConfigPath = path.join(sandbox, 'conductor-config.yaml');
     const configStr = fs.readFileSync(conductorConfigPath, 'utf-8');
     const lines = configStr.split('\n');
@@ -320,14 +363,11 @@ app.whenReady().then(async () => {
     }
   });
 
-  SANDBOX_PROCESSES.push(sandboxHandle);
-
-  // open browser window for each sandbox
-  //
+  // Open browser windows for full-arc agents
   for (var i = 0; i < CLI_OPTS.numAgents; i++) {
     const zomeCallSigner = await rustUtils.ZomeCallSigner.connect(lairUrls[i], 'pass');
 
-    const adminPort = portsInfo[i].admin_port;
+    const adminPort = fullArcPortsInfo[i].admin_port;
     const adminWs = await AdminWebsocket.connect({
       url: new URL(`ws://localhost:${adminPort}`),
       wsClientOptions: {
@@ -341,7 +381,7 @@ app.whenReady().then(async () => {
       expiry_seconds: 999999,
     });
 
-    const appPort = portsInfo[i].app_ports[0];
+    const appPort = fullArcPortsInfo[i].app_ports[0];
     const appWs = await AppWebsocket.connect({
       url: new URL(`ws://localhost:${appPort}`),
       wsClientOptions: {
@@ -358,6 +398,7 @@ app.whenReady().then(async () => {
       appPort,
       appAuthTokenResponse.token,
       DATA_ROOT_DIR,
+      'full-arc',
     );
     // We need to add the window to the window map before loading its UI, otherwise
     // zome calls can be made before handleSignZomeCall() can verify that the
@@ -371,6 +412,61 @@ app.whenReady().then(async () => {
       CLI_OPTS.uiSource,
       CLI_OPTS.happOrWebhappPath,
       i + 1,
+      CLI_OPTS.openDevtools,
+    );
+  }
+
+  // Open browser windows for zero-arc agents
+  for (var i = 0; i < CLI_OPTS.numZeroArcAgents; i++) {
+    const agentNum = CLI_OPTS.numAgents + i + 1;
+    const lairUrlIndex = CLI_OPTS.numAgents + i;
+    const zomeCallSigner = await rustUtils.ZomeCallSigner.connect(lairUrls[lairUrlIndex], 'pass');
+
+    const adminPort = zeroArcPortsInfo[i].admin_port;
+    const adminWs = await AdminWebsocket.connect({
+      url: new URL(`ws://localhost:${adminPort}`),
+      wsClientOptions: {
+        origin: 'hc-spin',
+      },
+    });
+
+    const appAuthTokenResponse = await adminWs.issueAppAuthenticationToken({
+      installed_app_id: CLI_OPTS.appId,
+      single_use: false,
+      expiry_seconds: 999999,
+    });
+
+    const appPort = zeroArcPortsInfo[i].app_ports[0];
+    const appWs = await AppWebsocket.connect({
+      url: new URL(`ws://localhost:${appPort}`),
+      wsClientOptions: {
+        origin: 'hc-spin',
+      },
+      token: appAuthTokenResponse.token,
+    });
+    const appInfo = await appWs.appInfo();
+    if (!appInfo) throw new Error('AppInfo is null.');
+    const happWindow = await createHappWindow(
+      CLI_OPTS.uiSource,
+      CLI_OPTS.appId,
+      agentNum,
+      appPort,
+      appAuthTokenResponse.token,
+      DATA_ROOT_DIR,
+      'zero-arc',
+    );
+    // We need to add the window to the window map before loading its UI, otherwise
+    // zome calls can be made before handleSignZomeCall() can verify that the
+    // zome call is made from an authorized window (https://github.com/holochain/hc-spin/issues/30)
+    WINDOW_INFO_MAP[happWindow.webContents.id] = {
+      agentPubKey: appInfo.agent_pub_key,
+      zomeCallSigner,
+    };
+    await loadHappWindow(
+      happWindow,
+      CLI_OPTS.uiSource,
+      CLI_OPTS.happOrWebhappPath,
+      agentNum,
       CLI_OPTS.openDevtools,
     );
   }

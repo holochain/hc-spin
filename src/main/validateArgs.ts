@@ -6,6 +6,7 @@ export type CliOpts = {
   appId?: string;
   holochainPath?: string;
   numAgents?: number;
+  numZeroArcAgents?: number;
   networkSeed?: string;
   uiPath?: string;
   uiPort?: number;
@@ -18,6 +19,7 @@ export type CliOptsValidated = {
   appId: string;
   holochainPath: string | undefined;
   numAgents: number;
+  numZeroArcAgents: number;
   networkSeed: string | undefined;
   uiSource: UISource;
   singalingUrl: string | undefined;
@@ -57,6 +59,11 @@ export function validateCliArgs(
       `The --num-agents (-n) option must be of type number but got: ${cliOpts.numAgents}`,
     );
   }
+  if (cliOpts.numZeroArcAgents && typeof cliOpts.numZeroArcAgents !== 'number') {
+    throw new Error(
+      `The --num-zero-arc-agents (-z) option must be of type number but got: ${cliOpts.numZeroArcAgents}`,
+    );
+  }
   const isHapp = happOrWebhappPath.endsWith('.happ');
   if (isHapp && !cliOpts.uiPath && !cliOpts.uiPort) {
     throw new Error(
@@ -71,12 +78,37 @@ export function validateCliArgs(
 
   const appId = cliOpts.appId ? cliOpts.appId : path.parse(path.basename(cliArgs[0])).name;
   const holochainPath = cliOpts.holochainPath;
-  const numAgents = cliOpts.numAgents ? cliOpts.numAgents : 2;
+  const numAgents = cliOpts.numAgents ? cliOpts.numAgents : 0;
+  const numZeroArcAgents = cliOpts.numZeroArcAgents ? cliOpts.numZeroArcAgents : 0;
+
+  // Ensure at least one agent is specified
+  if (numAgents === 0 && numZeroArcAgents === 0) {
+    // Default to 2 full-arc agents if nothing specified
+    return {
+      appId,
+      holochainPath,
+      numAgents: 2,
+      numZeroArcAgents: 0,
+      networkSeed: cliOpts.networkSeed,
+      uiSource: cliOpts.uiPath
+        ? { type: 'path', path: cliOpts.uiPath }
+        : cliOpts.uiPort
+          ? { type: 'port', port: cliOpts.uiPort }
+          : { type: 'path', path: path.join(appDataRootDir, 'apps', appId, 'ui') },
+      singalingUrl: cliOpts.signalingUrl,
+      bootstrapUrl: cliOpts.bootstrapUrl,
+      happOrWebhappPath: isHapp
+        ? { type: 'happ', path: happOrWebhappPath }
+        : { type: 'webhapp', path: happOrWebhappPath },
+      openDevtools: cliOpts.openDevtools ? true : false,
+    };
+  }
 
   return {
     appId,
     holochainPath,
     numAgents,
+    numZeroArcAgents,
     networkSeed: cliOpts.networkSeed,
     uiSource: cliOpts.uiPath
       ? { type: 'path', path: cliOpts.uiPath }

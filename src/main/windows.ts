@@ -23,6 +23,7 @@ export async function createHappWindow(
   appPort: number,
   appAuthToken: AppAuthenticationToken,
   appDataRootDir: string,
+  agentType?: 'full-arc' | 'zero-arc',
 ): Promise<BrowserWindow> {
   // TODO create mapping between installed-app-id's and window ids
   if (!appPort) throw new Error('App port not defined.');
@@ -79,12 +80,14 @@ electron.contextBridge.exposeInMainWorld("__HC_LAUNCHER_ENV__", {
     }
   }
 
+  const titlePrefix = agentType === 'zero-arc' ? 'Zero-Arc Agent' : 'Agent';
+  
   return new BrowserWindow({
     width: 1200,
     height: 800,
     show: false,
     icon,
-    title: `Agent ${agentNum} - ${appId}`,
+    title: `${titlePrefix} ${agentNum} - ${appId}`,
     webPreferences: {
       preload: preloadPath,
       partition,
