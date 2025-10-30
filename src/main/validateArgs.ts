@@ -7,6 +7,7 @@ export type CliOpts = {
   holochainPath?: string;
   numAgents?: number;
   networkSeed?: string;
+  targetArcFactor?: number;
   uiPath?: string;
   uiPort?: number;
   signalingUrl?: string;
@@ -19,6 +20,7 @@ export type CliOptsValidated = {
   holochainPath: string | undefined;
   numAgents: number;
   networkSeed: string | undefined;
+  targetArcFactor: number | undefined;
   uiSource: UISource;
   singalingUrl: string | undefined;
   bootstrapUrl: string | undefined;
@@ -78,6 +80,7 @@ export function validateCliArgs(
     holochainPath,
     numAgents,
     networkSeed: cliOpts.networkSeed,
+    targetArcFactor: cliOpts.targetArcFactor,
     uiSource: cliOpts.uiPath
       ? { type: 'path', path: cliOpts.uiPath }
       : cliOpts.uiPort

@@ -53,6 +53,12 @@ cli
     ),
   )
   .option('--network-seed <string>', 'Install the app with a specific network seed.')
+  .addOption(
+    new Option(
+      '-t, --target-arc-factor <number>',
+      'Set the target arc factor for all conductors. In normal operation, leave this as the default 1. For leacher/zero-arc nodes that do not contribute to gossip, set to 0.',
+    ).argParser(parseInt),
+  )
   .option('--ui-path <path>', "Path to the folder containing the index.html of the webhapp's UI.")
   .option(
     '--ui-port <number>',
@@ -206,6 +212,7 @@ async function spawnSandboxes(
   signalUrl: string,
   appId: string,
   networkSeed?: string,
+  targetArcFactor?: number,
 ): Promise<
   [childProcess.ChildProcessWithoutNullStreams, Array<string>, Record<number, PortsInfo>]
 > {
@@ -230,7 +237,11 @@ async function spawnSandboxes(
     generateArgs.push('--network-seed');
     generateArgs.push(networkSeed);
   }
-  generateArgs.push(happPath, 'network', '--bootstrap', bootStrapUrl, 'webrtc', signalUrl);
+  generateArgs.push(happPath, 'network');
+  if (targetArcFactor !== undefined) {
+    generateArgs.push('--target-arc-factor', targetArcFactor.toString());
+  }
+  generateArgs.push('--bootstrap', bootStrapUrl, 'webrtc', signalUrl);
   // console.log('GENERATE ARGS: ', generateArgs);
 
   let readyConductors = 0;
@@ -302,6 +313,7 @@ app.whenReady().then(async () => {
     CLI_OPTS.singalingUrl ? CLI_OPTS.singalingUrl : signalingUrl,
     CLI_OPTS.appId,
     CLI_OPTS.networkSeed,
+    CLI_OPTS.targetArcFactor,
   );
 
   const lairUrls: string[] = [];
