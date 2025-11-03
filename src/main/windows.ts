@@ -1,9 +1,10 @@
-import path from 'path';
-import fs from 'fs';
-import url from 'url';
+import { is } from '@electron-toolkit/utils';
 import { AppAuthenticationToken, InstalledAppId } from '@holochain/client';
 import { BrowserWindow, NativeImage, nativeImage, net, session, shell } from 'electron';
-import { is } from '@electron-toolkit/utils';
+import fs from 'fs';
+import path from 'path';
+import url from 'url';
+
 import { HappOrWebhappPath } from './validateArgs';
 
 export type UISource =
@@ -146,7 +147,7 @@ export async function loadHappWindow(
       return;
     }
   } else {
-    throw new Error('Unsupported uiSource type: ', (uiSource as any).type);
+    throw new Error('Unsupported uiSource: ', uiSource);
   }
 
   happWindow.show();

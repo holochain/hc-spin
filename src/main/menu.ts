@@ -49,41 +49,41 @@ export const menu = Menu.buildFromTemplate([
     ],
   },
   {
-    label: "Edit",
+    label: 'Edit',
     submenu: [
       {
-        label: "Undo",
-        role: "undo",
-        accelerator: "CommandOrControl+Z"
+        label: 'Undo',
+        role: 'undo',
+        accelerator: 'CommandOrControl+Z',
       },
       {
-        label: "Redo",
-        role: "redo",
-        accelerator: "CommandOrControl+Shift+Z"
+        label: 'Redo',
+        role: 'redo',
+        accelerator: 'CommandOrControl+Shift+Z',
       },
       {
-        type: "separator"
+        type: 'separator',
       },
       {
-        label: "Cut",
-        role: "cut",
-        accelerator: "CommandOrControl+X"
+        label: 'Cut',
+        role: 'cut',
+        accelerator: 'CommandOrControl+X',
       },
       {
-        label: "Copy",
-        role: "copy",
-        accelerator: "CommandOrControl+C"
+        label: 'Copy',
+        role: 'copy',
+        accelerator: 'CommandOrControl+C',
       },
       {
-        label: "Paste",
-        role: "paste",
-        accelerator: "CommandOrControl+V"
+        label: 'Paste',
+        role: 'paste',
+        accelerator: 'CommandOrControl+V',
       },
       {
-        label: "Select All",
-        role: "selectAll",
-        accelerator: "CommandOrControl+A"
-      }
-    ]
-  }
+        label: 'Select All',
+        role: 'selectAll',
+        accelerator: 'CommandOrControl+A',
+      },
+    ],
+  },
 ]);
