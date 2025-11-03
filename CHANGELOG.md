@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 ### Fixed
+- Fixed development environment setup and developer documentation outlining how to use it.
+
 ### Changed
 ### Removed
 
