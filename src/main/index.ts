@@ -25,15 +25,12 @@ import { sha512 } from 'js-sha512';
 
 const rustUtils = require('@holochain/hc-spin-rust-utils');
 
-const cliPackageJsonPath = path.resolve(path.join(app.getAppPath(), '../../package.json'));
-const cliPackageJson = require(cliPackageJsonPath);
-
 const cli = new Command();
 
 cli
   .name('hc-spin')
   .description('CLI to run Holochain apps during development.')
-  .version(`${cliPackageJson.version} (built for holochain ${cliPackageJson.holochainVersion})`)
+  .version(`${__PACKAGE_VERSION__} (built for holochain ${__HOLOCHAIN_VERSION__})`)
   .argument(
     '<path>',
     'Path to .webhapp or .happ file to launch. If a .happ file is passed, either a UI path must be specified via --ui-path or a port pointing to a localhost server via --ui-port',

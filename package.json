@@ -27,10 +27,9 @@
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
-    "typecheck": "npm run typecheck:node && npm run typecheck:web",
-    "start": "electron-vite preview",
-    "dev": "electron-vite dev",
-    "build": "rimraf dist && npm run typecheck && electron-vite build && mv ./out ./dist && cp ./cli/cli.js ./dist/cli.js && node ./scripts/replace-electron-version.js"
+    "typecheck": "yarn run typecheck:node && yarn run typecheck:web",
+    "start": "node dist/cli.js",
+    "build": "rimraf dist && yarn run typecheck && electron-vite build && mv ./out ./dist && cp ./cli/cli.js ./dist/cli.js && node ./scripts/replace-electron-version.js"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
