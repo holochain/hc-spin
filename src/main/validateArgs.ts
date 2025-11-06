@@ -8,6 +8,7 @@ export type CliOpts = {
   holochainPath?: string;
   numAgents?: number;
   networkSeed?: string;
+  targetArcFactor?: number;
   uiPath?: string;
   uiPort?: number;
   signalingUrl?: string;
@@ -20,6 +21,7 @@ export type CliOptsValidated = {
   holochainPath: string | undefined;
   numAgents: number;
   networkSeed: string | undefined;
+  targetArcFactor: number | undefined;
   uiSource: UISource;
   singalingUrl: string | undefined;
   bootstrapUrl: string | undefined;
@@ -53,9 +55,20 @@ export function validateCliArgs(
       `Path to .happ or .webhapp file passed as argument does not exist: ${happOrWebhappPath}`,
     );
   }
-  if (cliOpts.numAgents && typeof cliOpts.numAgents !== 'number') {
+  if (
+    cliOpts.numAgents !== undefined &&
+    (typeof cliOpts.numAgents !== 'number' || Number.isNaN(cliOpts.numAgents))
+  ) {
     throw new Error(
       `The --num-agents (-n) option must be of type number but got: ${cliOpts.numAgents}`,
+    );
+  }
+  if (
+    cliOpts.targetArcFactor !== undefined &&
+    (typeof cliOpts.targetArcFactor !== 'number' || Number.isNaN(cliOpts.targetArcFactor))
+  ) {
+    throw new Error(
+      `The --target-arc-factor (-t) option must be a valid number but got: ${cliOpts.targetArcFactor}`,
     );
   }
   const isHapp = happOrWebhappPath.endsWith('.happ');
@@ -79,6 +92,7 @@ export function validateCliArgs(
     holochainPath,
     numAgents,
     networkSeed: cliOpts.networkSeed,
+    targetArcFactor: cliOpts.targetArcFactor,
     uiSource: cliOpts.uiPath
       ? { type: 'path', path: cliOpts.uiPath }
       : cliOpts.uiPort
