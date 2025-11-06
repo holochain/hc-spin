@@ -147,7 +147,7 @@ export async function loadHappWindow(
       return;
     }
   } else {
-    throw new Error('Unsupported uiSource: ', uiSource);
+    throw new Error(`Unsupported uiSource: ${JSON.stringify(uiSource)}`);
   }
 
   happWindow.show();
