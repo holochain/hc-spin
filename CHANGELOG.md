@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## \[Unreleased\]
 
 ### Added
+### Fixed
+### Changed
+### Removed
+
+## 2025-11-06: v0.600.0-rc.0
+
+### Added
 - A new argument `--target-arc-factor` to support overriding the conductor configuration `network.target_arc_factor` in all launched conductors.
 
 ### Fixed
@@ -12,8 +19,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Check linting in CI workflow
-
-### Removed
 
 ## 2025-10-13: v0.600.0-dev.0
 
