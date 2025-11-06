@@ -55,9 +55,20 @@ export function validateCliArgs(
       `Path to .happ or .webhapp file passed as argument does not exist: ${happOrWebhappPath}`,
     );
   }
-  if (cliOpts.numAgents && typeof cliOpts.numAgents !== 'number') {
+  if (
+    cliOpts.numAgents !== undefined &&
+    (typeof cliOpts.numAgents !== 'number' || Number.isNaN(cliOpts.numAgents))
+  ) {
     throw new Error(
       `The --num-agents (-n) option must be of type number but got: ${cliOpts.numAgents}`,
+    );
+  }
+  if (
+    cliOpts.targetArcFactor !== undefined &&
+    (typeof cliOpts.targetArcFactor !== 'number' || Number.isNaN(cliOpts.targetArcFactor))
+  ) {
+    throw new Error(
+      `The --target-arc-factor (-t) option must be a valid number but got: ${cliOpts.targetArcFactor}`,
     );
   }
   const isHapp = happOrWebhappPath.endsWith('.happ');
