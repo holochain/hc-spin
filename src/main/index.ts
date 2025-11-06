@@ -1,14 +1,3 @@
-import { app, IpcMainInvokeEvent, ipcMain, protocol, Menu, BrowserWindow } from 'electron';
-import fs from 'fs';
-import path from 'path';
-import { nanoid } from 'nanoid';
-import { Command, Option } from 'commander';
-import contextMenu from 'electron-context-menu';
-import split from 'split';
-import * as childProcess from 'child_process';
-import { ZomeCallSigner } from '@holochain/hc-spin-rust-utils';
-import { createHappWindow, loadHappWindow } from './windows';
-import getPort from 'get-port';
 import {
   AdminWebsocket,
   AgentPubKey,
@@ -18,22 +7,31 @@ import {
   getNonceExpiration,
   randomNonce,
 } from '@holochain/client';
-import { validateCliArgs } from './validateArgs';
+import { ZomeCallSigner } from '@holochain/hc-spin-rust-utils';
 import { encode } from '@msgpack/msgpack';
-import { menu } from './menu';
+import * as childProcess from 'child_process';
+import { Command, Option } from 'commander';
+import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent, Menu, protocol } from 'electron';
+import contextMenu from 'electron-context-menu';
+import fs from 'fs';
+import getPort from 'get-port';
 import { sha512 } from 'js-sha512';
+import { nanoid } from 'nanoid';
+import path from 'path';
+import split from 'split';
+
+import { menu } from './menu';
+import { validateCliArgs } from './validateArgs';
+import { createHappWindow, loadHappWindow } from './windows';
 
 const rustUtils = require('@holochain/hc-spin-rust-utils');
-
-const cliPackageJsonPath = path.resolve(path.join(app.getAppPath(), '../../package.json'));
-const cliPackageJson = require(cliPackageJsonPath);
 
 const cli = new Command();
 
 cli
   .name('hc-spin')
   .description('CLI to run Holochain apps during development.')
-  .version(`${cliPackageJson.version} (built for holochain ${cliPackageJson.holochainVersion})`)
+  .version(`${__PACKAGE_VERSION__} (built for holochain ${__HOLOCHAIN_VERSION__})`)
   .argument(
     '<path>',
     'Path to .webhapp or .happ file to launch. If a .happ file is passed, either a UI path must be specified via --ui-path or a port pointing to a localhost server via --ui-port',
@@ -227,7 +225,7 @@ async function spawnSandboxes(
     '--run',
   ];
   let appPorts = '';
-  for (var i = 1; i <= nAgents; i++) {
+  for (let i = 1; i <= nAgents; i++) {
     const appPort = await getPort();
     appPorts += `${appPort},`;
   }
@@ -336,7 +334,7 @@ app.whenReady().then(async () => {
 
   // open browser window for each sandbox
   //
-  for (var i = 0; i < CLI_OPTS.numAgents; i++) {
+  for (let i = 0; i < CLI_OPTS.numAgents; i++) {
     const zomeCallSigner = await rustUtils.ZomeCallSigner.connect(lairUrls[i], 'pass');
 
     const adminPort = portsInfo[i].admin_port;

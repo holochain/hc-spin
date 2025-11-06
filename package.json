@@ -25,12 +25,12 @@
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
+    "lint:check": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
-    "typecheck": "npm run typecheck:node && npm run typecheck:web",
-    "start": "electron-vite preview",
-    "dev": "electron-vite dev",
-    "build": "rimraf dist && npm run typecheck && electron-vite build && mv ./out ./dist && cp ./cli/cli.js ./dist/cli.js && node ./scripts/replace-electron-version.js"
+    "typecheck": "yarn run typecheck:node && yarn run typecheck:web",
+    "start": "node dist/cli.js",
+    "build": "rimraf dist && yarn run typecheck && electron-vite build && mv ./out ./dist && cp ./cli/cli.js ./dist/cli.js && node ./scripts/replace-electron-version.js"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
@@ -55,6 +55,7 @@
     "electron-builder": "^24.9.1",
     "electron-vite": "2.3.0",
     "eslint": "^8.56.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "prettier": "^3.1.1",
     "rimraf": "5.0.5",
     "typescript": "^5.3.3",
