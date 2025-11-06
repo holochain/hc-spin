@@ -1,7 +1,7 @@
 {
   "name": "@holochain/hc-spin",
-  "version": "0.600.0-dev.0",
-  "holochainVersion": "0.6.0-dev.28",
+  "version": "0.600.0-rc.0",
+  "holochainVersion": "0.6.0-rc.0",
   "description": "CLI to run Holochain apps during development.",
   "author": "matthme",
   "homepage": "https://developer.holochain.org",
