@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fixed development environment setup and developer documentation outlining how to use it.
 
 ### Changed
+- Check linting in CI workflow
+
 ### Removed
 
 ## 2025-10-13: v0.600.0-dev.0
