@@ -8,21 +8,29 @@ To install the latest version compatible with **holochain 0.4.x**:
 
 ⚠️ Requires `@holochain/client 0.18.0` or newer ⚠️
 
-```
+```sh
 npm install --save-dev @holochain/hc-spin@">=0.400.0 <0.500.0"
 ```
 
 To install the latest version compatible with **holochain 0.5.x**:
 
-⚠️ Requires `@holochain/client 0.19.0-dev.7` or newer ⚠️
+⚠️ Requires `@holochain/client 0.19.0` or newer ⚠️
 
-```
+```sh
 npm install --save-dev @holochain/hc-spin@">=0.500.0 <0.600.0"
 ```
 
-## Usage (holochain 0.5)
+To install the latest version compatible with **holochain 0.6.x**:
 
+⚠️ Requires `@holochain/client 0.20.0` or newer ⚠️
+
+```sh
+npm install --save-dev @holochain/hc-spin@">=0.600.0 <0.700.0"
 ```
+
+## Usage (holochain 0.6)
+
+```txt
 Usage: hc-spin [options] <path>
 
 CLI to run Holochain apps during development.
@@ -52,18 +60,18 @@ Options:
 
 Run a .happ file with 2 agents connected to the UI of your dev server running on port 8888:
 
-```
+```sh
 hc-spin -n 2 --ui-port 8888 path/to/your/happ-file.happ
 ```
 
 Run a fully packaged .webhapp for 2 agents:
 
-```
+```sh
 hc-spin -n 2 path/to/your/webhapp-file.webhapp
 ```
 
 Run a .happ file with 2 agents connected to the UI assets residing at the provided path:
 
-```
+```sh
 hc-spin -n 2 --ui-path path/to/directory/containing/ui/assets path/to/your/happ-file.happ
 ```
