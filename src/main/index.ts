@@ -66,6 +66,10 @@ cli
     '--signaling-url <url>',
     'Url of the signaling server to use. By default, hc spin spins up a local development signaling server for you but this argument allows you to specify a custom one.',
   )
+  .option(
+    '--force-admin-ports <ports>',
+    'A comma-separated list of port numbers for the holochain conductors to bind to their admin interfaces. By default, hc spin picks any available ports.',
+  )
   .option('--open-devtools', 'Automatically open the devtools on startup.');
 
 cli.parse();
@@ -211,19 +215,26 @@ async function spawnSandboxes(
   appId: string,
   networkSeed?: string,
   targetArcFactor?: number,
+  forceAdminPorts?: number[],
 ): Promise<
   [childProcess.ChildProcessWithoutNullStreams, Array<string>, Record<number, PortsInfo>]
 > {
-  const generateArgs = [
-    'sandbox',
+  const generateArgs = ['sandbox'];
+  
+  if (forceAdminPorts !== undefined && forceAdminPorts.length > 0) {
+    generateArgs.push('--force-admin-ports', forceAdminPorts.join(','))
+  }
+  
+  generateArgs.push(
     '--piped',
     'generate',
     '--num-sandboxes',
     nAgents.toString(),
     '--app-id',
     appId,
-    '--run',
-  ];
+    '--run'
+  );
+
   let appPorts = '';
   for (let i = 1; i <= nAgents; i++) {
     const appPort = await getPort();
@@ -312,6 +323,7 @@ app.whenReady().then(async () => {
     CLI_OPTS.appId,
     CLI_OPTS.networkSeed,
     CLI_OPTS.targetArcFactor,
+    CLI_OPTS.forceAdminPorts,
   );
 
   const lairUrls: string[] = [];

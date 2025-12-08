@@ -14,6 +14,7 @@ export type CliOpts = {
   signalingUrl?: string;
   bootstrapUrl?: string;
   openDevtools?: boolean;
+  forceAdminPorts?: string;
 };
 
 export type CliOptsValidated = {
@@ -27,6 +28,7 @@ export type CliOptsValidated = {
   bootstrapUrl: string | undefined;
   happOrWebhappPath: HappOrWebhappPath;
   openDevtools: boolean;
+  forceAdminPorts: number[] | undefined;
 };
 
 export type HappOrWebhappPath = {
@@ -87,6 +89,20 @@ export function validateCliArgs(
   const holochainPath = cliOpts.holochainPath;
   const numAgents = cliOpts.numAgents ? cliOpts.numAgents : 2;
 
+  let forceAdminPorts: number[] | undefined;
+  if(cliOpts.forceAdminPorts !== undefined) {
+    forceAdminPorts = cliOpts.forceAdminPorts.split(',').map((portStr) => {
+      const portInt = parseInt(portStr);
+
+      if(Number.isNaN(portInt)) {
+        throw new Error(
+          `The --force-admin-ports must be a comma-separated list of valid port numbers, but got: ${cliOpts.forceAdminPorts}`
+        );
+      }
+      return portInt;
+    })
+  }
+
   return {
     appId,
     holochainPath,
@@ -104,5 +120,6 @@ export function validateCliArgs(
       ? { type: 'happ', path: happOrWebhappPath }
       : { type: 'webhapp', path: happOrWebhappPath },
     openDevtools: cliOpts.openDevtools ? true : false,
+    forceAdminPorts,
   };
 }
