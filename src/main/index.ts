@@ -220,11 +220,11 @@ async function spawnSandboxes(
   [childProcess.ChildProcessWithoutNullStreams, Array<string>, Record<number, PortsInfo>]
 > {
   const generateArgs = ['sandbox'];
-  
+
   if (forceAdminPorts !== undefined && forceAdminPorts.length > 0) {
-    generateArgs.push('--force-admin-ports', forceAdminPorts.join(','))
+    generateArgs.push('--force-admin-ports', forceAdminPorts.join(','));
   }
-  
+
   generateArgs.push(
     '--piped',
     'generate',
@@ -232,7 +232,7 @@ async function spawnSandboxes(
     nAgents.toString(),
     '--app-id',
     appId,
-    '--run'
+    '--run',
   );
 
   let appPorts = '';

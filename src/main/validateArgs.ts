@@ -90,17 +90,17 @@ export function validateCliArgs(
   const numAgents = cliOpts.numAgents ? cliOpts.numAgents : 2;
 
   let forceAdminPorts: number[] | undefined;
-  if(cliOpts.forceAdminPorts !== undefined) {
+  if (cliOpts.forceAdminPorts !== undefined) {
     forceAdminPorts = cliOpts.forceAdminPorts.split(',').map((portStr) => {
       const portInt = parseInt(portStr);
 
-      if(Number.isNaN(portInt)) {
+      if (Number.isNaN(portInt)) {
         throw new Error(
-          `The --force-admin-ports must be a comma-separated list of valid port numbers, but got: ${cliOpts.forceAdminPorts}`
+          `The --force-admin-ports must be a comma-separated list of valid port numbers, but got: ${cliOpts.forceAdminPorts}`,
         );
       }
       return portInt;
-    })
+    });
   }
 
   return {
