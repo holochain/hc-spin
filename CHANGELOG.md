@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## \[Unreleased\]
 
 ### Added
+- A new argument `--force-admin-ports` takes a comma-separated list of port numbers, to force generated conductors to use specific admin ports. [#50](https://github.com/holochain/hc-spin/pull/50)
 ### Fixed
 ### Changed
 ### Removed
