@@ -4,12 +4,12 @@ CLI to run Holochain apps in development mode.
 
 ## Installation
 
-To install the latest version compatible with **holochain 0.4.x**:
+To install the latest version compatible with **holochain 0.6.x**:
 
-⚠️ Requires `@holochain/client 0.18.0` or newer ⚠️
+⚠️ Requires `@holochain/client 0.20.0` or newer ⚠️
 
 ```sh
-npm install --save-dev @holochain/hc-spin@">=0.400.0 <0.500.0"
+npm install --save-dev @holochain/hc-spin@">=0.600.0 <0.700.0"
 ```
 
 To install the latest version compatible with **holochain 0.5.x**:
@@ -20,12 +20,12 @@ To install the latest version compatible with **holochain 0.5.x**:
 npm install --save-dev @holochain/hc-spin@">=0.500.0 <0.600.0"
 ```
 
-To install the latest version compatible with **holochain 0.6.x**:
+To install the latest version compatible with **holochain 0.4.x**:
 
-⚠️ Requires `@holochain/client 0.20.0` or newer ⚠️
+⚠️ Requires `@holochain/client 0.18.0` or newer ⚠️
 
 ```sh
-npm install --save-dev @holochain/hc-spin@">=0.600.0 <0.700.0"
+npm install --save-dev @holochain/hc-spin@">=0.400.0 <0.500.0"
 ```
 
 ## Usage (holochain 0.6)
