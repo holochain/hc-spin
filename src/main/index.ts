@@ -305,7 +305,7 @@ app.whenReady().then(async () => {
   if (CLI_OPTS.happOrWebhappPath.type === 'webhapp') {
     happTargetDir = path.join(DATA_ROOT_DIR, 'apps', CLI_OPTS.appId);
     const uiTargetDir = path.join(happTargetDir, 'ui');
-    await rustUtils.saveHappOrWebhapp(
+    await rustUtils.unpackAndSaveWebhapp(
       CLI_OPTS.happOrWebhappPath.path,
       CLI_OPTS.appId,
       uiTargetDir,

@@ -1,7 +1,7 @@
 {
   "name": "@holochain/hc-spin",
-  "version": "0.600.0",
-  "holochainVersion": "0.6.0",
+  "version": "0.700.0-dev.0",
+  "holochainVersion": "0.7.0-dev.7",
   "description": "CLI to run Holochain apps during development.",
   "author": "matthme",
   "homepage": "https://developer.holochain.org",
@@ -36,7 +36,7 @@
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
     "@holochain/client": "^0.20.0",
-    "@holochain/hc-spin-rust-utils": "0.600.0",
+    "@holochain/hc-spin-rust-utils": "0.700.0-dev.0",
     "@msgpack/msgpack": "^2.8.0",
     "bufferutil": "4.0.8",
     "commander": "11.1.0",
