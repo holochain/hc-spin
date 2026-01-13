@@ -483,41 +483,41 @@
     lodash-es "^4.17.21"
     ws "^8.14.2"
 
-"@holochain/hc-spin-rust-utils-darwin-arm64@0.600.0":
-  version "0.600.0"
-  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-darwin-arm64/-/hc-spin-rust-utils-darwin-arm64-0.600.0.tgz#0413eca93100ec5430c82b5535c675b9269e737a"
-  integrity sha512-tvU5vBHkkGRSD9K+3HWkTySX7XK+vdD35x3x/4pQ5J/31gRMKcRbrP0W1n7mTOyFUWQjgNHnLJeTM3yt2a7tbA==
+"@holochain/hc-spin-rust-utils-darwin-arm64@0.700.0-dev.0":
+  version "0.700.0-dev.0"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-darwin-arm64/-/hc-spin-rust-utils-darwin-arm64-0.700.0-dev.0.tgz#2444b9dabb280cfe02ac6bb8df536f02205319c3"
+  integrity sha512-Oyszp4d8V1NLS7UfAoNg66/x9+JHMpBf/+i+lK0+iHQBHa4eXVF2AO1VCGTr/LwN/wz5kgKjOh43N4C7EPgsiQ==
 
-"@holochain/hc-spin-rust-utils-darwin-x64@0.600.0":
-  version "0.600.0"
-  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-darwin-x64/-/hc-spin-rust-utils-darwin-x64-0.600.0.tgz#7d9c2bd7a06c2e24e2b1ddea2e8125a344746bbb"
-  integrity sha512-Mewfh8JC49/kXMRNT4Y+ObwrjNk0FTN9aOrStsmRVXfvb4naCRnuExfz3X8iMB85b6SBPxc0lyCC9A4YGvUFPw==
+"@holochain/hc-spin-rust-utils-darwin-x64@0.700.0-dev.0":
+  version "0.700.0-dev.0"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-darwin-x64/-/hc-spin-rust-utils-darwin-x64-0.700.0-dev.0.tgz#b14a8da80b20f7d707e0358256f39da40b931bca"
+  integrity sha512-f01n+Na/fM00ikj8GKl26AC8bwR2/d6UN63ZHnHuwpOQbhm3ZxcU3oXuoJ7msm8XgWO8AaKa2WXb0uG56IJJPw==
 
-"@holochain/hc-spin-rust-utils-linux-arm64-gnu@0.600.0":
-  version "0.600.0"
-  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-linux-arm64-gnu/-/hc-spin-rust-utils-linux-arm64-gnu-0.600.0.tgz#50c19754829896bd594e7fb09099df00c8fc4961"
-  integrity sha512-o/RGxy+2hvvN5S8OnVnOLQyx9uiwT2tBSnGbyYZHkZTzipi9eVczOlLlNQnck3s3ApxwAv+FP7dDLJBVxZjmRA==
+"@holochain/hc-spin-rust-utils-linux-arm64-gnu@0.700.0-dev.0":
+  version "0.700.0-dev.0"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-linux-arm64-gnu/-/hc-spin-rust-utils-linux-arm64-gnu-0.700.0-dev.0.tgz#213e65156556505defab0f1961cba494fe49ec6f"
+  integrity sha512-S9s2crcwhIGTPLYyolvZF49iYafe+CrdeWW4Kh1Wn954JmgVVWdC8oUIizHViwqAUjeiiVpy4Eu1i79UmoNaTw==
 
-"@holochain/hc-spin-rust-utils-linux-x64-gnu@0.600.0":
-  version "0.600.0"
-  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-linux-x64-gnu/-/hc-spin-rust-utils-linux-x64-gnu-0.600.0.tgz#d648e6b3a04cbbc6cd4670ca408541740f5b388f"
-  integrity sha512-nr2prm4tlB3inRnQANc6W2M/8JleBTWbleSJ4tdFmS0U2xjoKBLGYmp6TjeTwLAod/99qCNiYoVFblQhxWcZ4w==
+"@holochain/hc-spin-rust-utils-linux-x64-gnu@0.700.0-dev.0":
+  version "0.700.0-dev.0"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-linux-x64-gnu/-/hc-spin-rust-utils-linux-x64-gnu-0.700.0-dev.0.tgz#58dfa7af149c5e006b44b55a83057b1ef3fe4c19"
+  integrity sha512-QwRBI0d1jV4GnPaNvt74R4uIPTcojeyeU6IqvbyYj9ptJ0+BEJBpRLsVDyKBVZonQqQwwTWKVkMX0/Uugj0qIw==
 
-"@holochain/hc-spin-rust-utils-win32-x64-msvc@0.600.0":
-  version "0.600.0"
-  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-win32-x64-msvc/-/hc-spin-rust-utils-win32-x64-msvc-0.600.0.tgz#2d86f0c4eeac699cdd02fde28abc1b82afbd6ec2"
-  integrity sha512-RRyyN+51o7E8TuaKtS3xTAOyh2vVa39dhvY7Tr9EQLxSI9EO1xn4nM+3ZYqSCKPiSUlZ44DwOSrwgmbm2o/9xg==
+"@holochain/hc-spin-rust-utils-win32-x64-msvc@0.700.0-dev.0":
+  version "0.700.0-dev.0"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-win32-x64-msvc/-/hc-spin-rust-utils-win32-x64-msvc-0.700.0-dev.0.tgz#530434f1ed4a96d6dbf3010b301154b4a4b3c3de"
+  integrity sha512-pRf9ZroE83jI/GDXZWV9aLBxwiUoz9u7UV2I1LCqO2dnj6NKmLSBloM7r5ISTb1zruqoMt9oQprhNLZM21aZxQ==
 
-"@holochain/hc-spin-rust-utils@0.600.0":
-  version "0.600.0"
-  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils/-/hc-spin-rust-utils-0.600.0.tgz#4e3b5e1b9d310855c42e70cbbdecb2061ba2cd20"
-  integrity sha512-gseESyOrnoht22WsrZzfi/gR3jwgtypw3gErqDL8jYD5tYuqo0ibXZwDvmCBSAWDSxc1ZSWGRsWH09ZvxxAeDw==
+"@holochain/hc-spin-rust-utils@0.700.0-dev.0":
+  version "0.700.0-dev.0"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils/-/hc-spin-rust-utils-0.700.0-dev.0.tgz#2f62256658c01c838fd885a81865b0f5fc778ed3"
+  integrity sha512-zh31p03+UFwD9uCBwnu/fnFw+e597TxhYXkuws1Qod5QuKlT0uIg29hd5GiTfzgrQk9umelgPr1wNJbzxmAVuQ==
   optionalDependencies:
-    "@holochain/hc-spin-rust-utils-darwin-arm64" "0.600.0"
-    "@holochain/hc-spin-rust-utils-darwin-x64" "0.600.0"
-    "@holochain/hc-spin-rust-utils-linux-arm64-gnu" "0.600.0"
-    "@holochain/hc-spin-rust-utils-linux-x64-gnu" "0.600.0"
-    "@holochain/hc-spin-rust-utils-win32-x64-msvc" "0.600.0"
+    "@holochain/hc-spin-rust-utils-darwin-arm64" "0.700.0-dev.0"
+    "@holochain/hc-spin-rust-utils-darwin-x64" "0.700.0-dev.0"
+    "@holochain/hc-spin-rust-utils-linux-arm64-gnu" "0.700.0-dev.0"
+    "@holochain/hc-spin-rust-utils-linux-x64-gnu" "0.700.0-dev.0"
+    "@holochain/hc-spin-rust-utils-win32-x64-msvc" "0.700.0-dev.0"
 
 "@humanwhocodes/config-array@^0.13.0":
   version "0.13.0"
