@@ -21,7 +21,7 @@ import path from 'path';
 import split from 'split';
 
 import { menu } from './menu';
-import { validateCliArgs } from './validateArgs';
+import { Transport, validateCliArgs } from './validateArgs';
 import { createHappWindow, loadHappWindow } from './windows';
 
 const rustUtils = require('@holochain/hc-spin-rust-utils');
@@ -66,7 +66,11 @@ cli
     '--signaling-url <url>',
     'Url of the signaling server to use. By default, hc spin spins up a local development signaling server for you but this argument allows you to specify a custom one.',
   )
-  .option('--open-devtools', 'Automatically open the devtools on startup.');
+  .option('--open-devtools', 'Automatically open the devtools on startup.')
+  .option(
+    '--transport <quic|webrtc>',
+    'Configure network transport. Defaults to quic, compatible with the iroh transport used in in Holochain by default. Set to `webrtc` for tx5 transport.',
+  );
 
 cli.parse();
 // console.log('Got CLI opts: ', cli.opts());
@@ -171,7 +175,7 @@ const handleSignZomeCall = async (
   return signedZomeCall;
 };
 
-async function startLocalServices(): Promise<[string, string]> {
+async function startLocalServices(transport: Transport): Promise<[string, string]> {
   const localServicesHandle = childProcess.spawn('kitsune2-bootstrap-srv');
   return new Promise((resolve) => {
     let bootStrapUrl;
@@ -183,7 +187,7 @@ async function startLocalServices(): Promise<[string, string]> {
       if (line.includes('#kitsune2_bootstrap_srv#listening#')) {
         const hostAndPort = line.split('#kitsune2_bootstrap_srv#listening#')[1].split('#')[0];
         bootStrapUrl = `http://${hostAndPort}`;
-        signalUrl = `ws://${hostAndPort}`;
+        signalUrl = transport === 'quic' ? `http://${hostAndPort}` : `ws://${hostAndPort}`;
       }
       if (line.includes('#kitsune2_bootstrap_srv#running#')) {
         bootstrapRunning = true;
@@ -209,6 +213,7 @@ async function spawnSandboxes(
   bootStrapUrl: string,
   signalUrl: string,
   appId: string,
+  transport: Transport,
   networkSeed?: string,
   targetArcFactor?: number,
 ): Promise<
@@ -239,8 +244,7 @@ async function spawnSandboxes(
   if (targetArcFactor !== undefined) {
     generateArgs.push('--target-arc-factor', targetArcFactor.toString());
   }
-  generateArgs.push('--bootstrap', bootStrapUrl, 'webrtc', signalUrl);
-  // console.log('GENERATE ARGS: ', generateArgs);
+  generateArgs.push('--bootstrap', bootStrapUrl, transport, signalUrl);
 
   let readyConductors = 0;
   const portsInfo: Record<number, PortsInfo> = {};
@@ -302,7 +306,7 @@ app.whenReady().then(async () => {
     );
   }
 
-  const [bootstrapUrl, signalingUrl] = await startLocalServices();
+  const [bootstrapUrl, signalingUrl] = await startLocalServices(CLI_OPTS.transport);
 
   const [sandboxHandle, sandboxPaths, portsInfo] = await spawnSandboxes(
     CLI_OPTS.numAgents,
@@ -310,6 +314,7 @@ app.whenReady().then(async () => {
     CLI_OPTS.bootstrapUrl ? CLI_OPTS.bootstrapUrl : bootstrapUrl,
     CLI_OPTS.singalingUrl ? CLI_OPTS.singalingUrl : signalingUrl,
     CLI_OPTS.appId,
+    CLI_OPTS.transport,
     CLI_OPTS.networkSeed,
     CLI_OPTS.targetArcFactor,
   );
