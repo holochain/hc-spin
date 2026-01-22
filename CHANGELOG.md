@@ -9,6 +9,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 ### Removed
 
+## 2026-01-22: v0.600.1-rc.0
+
+### Changed
+
+- Bumped to holochain 0.6.1-rc.0
+
 ## 2025-11-06: v0.600.0-rc.0
 
 ### Added
