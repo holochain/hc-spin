@@ -14,6 +14,7 @@ export type CliOpts = {
   signalingUrl?: string;
   bootstrapUrl?: string;
   openDevtools?: boolean;
+  transport?: Transport;
 };
 
 export type CliOptsValidated = {
@@ -27,7 +28,10 @@ export type CliOptsValidated = {
   bootstrapUrl: string | undefined;
   happOrWebhappPath: HappOrWebhappPath;
   openDevtools: boolean;
+  transport: Transport;
 };
+
+export type Transport = 'quic' | 'webrtc';
 
 export type HappOrWebhappPath = {
   type: 'happ' | 'webhapp';
@@ -104,5 +108,6 @@ export function validateCliArgs(
       ? { type: 'happ', path: happOrWebhappPath }
       : { type: 'webhapp', path: happOrWebhappPath },
     openDevtools: cliOpts.openDevtools ? true : false,
+    transport: cliOpts.transport || 'quic',
   };
 }
