@@ -8,12 +8,14 @@ export type CliOpts = {
   holochainPath?: string;
   numAgents?: number;
   networkSeed?: string;
+  networkSeeds?: string[];
   targetArcFactor?: number;
   uiPath?: string;
   uiPort?: number;
   signalingUrl?: string;
   bootstrapUrl?: string;
   openDevtools?: boolean;
+  singleConductor?: boolean;
 };
 
 export type CliOptsValidated = {
@@ -21,12 +23,14 @@ export type CliOptsValidated = {
   holochainPath: string | undefined;
   numAgents: number;
   networkSeed: string | undefined;
+  networkSeeds: string[] | undefined;
   targetArcFactor: number | undefined;
   uiSource: UISource;
   singalingUrl: string | undefined;
   bootstrapUrl: string | undefined;
   happOrWebhappPath: HappOrWebhappPath;
   openDevtools: boolean;
+  singleConductor: boolean;
 };
 
 export type HappOrWebhappPath = {
@@ -87,12 +91,25 @@ export function validateCliArgs(
   const holochainPath = cliOpts.holochainPath;
   const numAgents = cliOpts.numAgents ? cliOpts.numAgents : 2;
 
+  // Parse network-seeds if provided (can be comma-separated string or array)
+  let networkSeeds: string[] | undefined;
+  if (cliOpts.networkSeeds) {
+    if (Array.isArray(cliOpts.networkSeeds)) {
+      // Handle space-separated values that commander might split
+      networkSeeds = cliOpts.networkSeeds.flatMap((seed) =>
+        seed.includes(',') ? seed.split(',').map((s) => s.trim()) : [seed],
+      );
+    }
+  }
+
   return {
     appId,
     holochainPath,
     numAgents,
     networkSeed: cliOpts.networkSeed,
+    networkSeeds,
     targetArcFactor: cliOpts.targetArcFactor,
+    singleConductor: cliOpts.singleConductor ? true : false,
     uiSource: cliOpts.uiPath
       ? { type: 'path', path: cliOpts.uiPath }
       : cliOpts.uiPort

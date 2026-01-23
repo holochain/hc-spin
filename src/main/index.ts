@@ -1,10 +1,12 @@
 import {
   AdminWebsocket,
   AgentPubKey,
+  AppInfo,
   AppWebsocket,
   CallZomeRequest,
   CallZomeRequestSigned,
   getNonceExpiration,
+  InstallAppRequest,
   randomNonce,
 } from '@holochain/client';
 import { ZomeCallSigner } from '@holochain/hc-spin-rust-utils';
@@ -51,6 +53,14 @@ cli
     ),
   )
   .option('--network-seed <string>', 'Install the app with a specific network seed.')
+  .option(
+    '--network-seeds <seeds...>',
+    'Install the app with specific network seeds (one per agent). Comma-separated or space-separated values.',
+  )
+  .option(
+    '--single-conductor',
+    'Install all agents on the same conductor instead of creating separate conductors.',
+  )
   .addOption(
     new Option(
       '-t, --target-arc-factor <number>',
@@ -203,6 +213,84 @@ type PortsInfo = {
   app_ports: number[];
 };
 
+type SingleSandboxInfo = {
+  sandboxHandle: childProcess.ChildProcessWithoutNullStreams;
+  sandboxPath: string;
+  lairUrl: string;
+  adminPort: number;
+  portsInfo: PortsInfo;
+};
+
+async function spawnSingleSandbox(
+  happPath: string,
+  bootStrapUrl: string,
+  signalUrl: string,
+  appId: string,
+  networkSeed?: string,
+  targetArcFactor?: number,
+): Promise<SingleSandboxInfo> {
+  const generateArgs = [
+    'sandbox',
+    '--piped',
+    'generate',
+    '--num-sandboxes',
+    '1',
+    '--app-id',
+    appId,
+    '--run',
+  ];
+  const appPort = await getPort();
+  generateArgs.push(appPort.toString());
+
+  if (networkSeed) {
+    generateArgs.push('--network-seed');
+    generateArgs.push(networkSeed);
+  }
+  generateArgs.push(happPath, 'network');
+  if (targetArcFactor !== undefined) {
+    generateArgs.push('--target-arc-factor', targetArcFactor.toString());
+  }
+  generateArgs.push('--bootstrap', bootStrapUrl, 'webrtc', signalUrl);
+
+  let sandboxPath: string | undefined;
+  let lairUrl: string | undefined;
+  let portsInfo: PortsInfo | undefined;
+
+  const sandboxHandle = childProcess.spawn('hc', generateArgs);
+  sandboxHandle.stdin.write('pass');
+  sandboxHandle.stdin.end();
+  return new Promise((resolve, reject) => {
+    sandboxHandle.stdout.pipe(split()).on('data', async (line: string) => {
+      console.log(`[hc-spin] | [hc sandbox]: ${line}`);
+      if (line.includes('Created directory at:')) {
+        sandboxPath = line.split('\x1B[1;4;48;5;254;38;5;4m')[1].split('\x1B[0m \x1B[1m')[0].trim();
+      }
+      if (line.includes('lair-keystore connection_url')) {
+        lairUrl = line.split('#')[2].trim();
+      }
+      if (line.includes('Conductor launched')) {
+        const split1 = line.split('{');
+        portsInfo = JSON.parse(`{${split1[1]}`);
+        if (sandboxPath && lairUrl && portsInfo) {
+          resolve({
+            sandboxHandle,
+            sandboxPath,
+            lairUrl,
+            adminPort: portsInfo.admin_port,
+            portsInfo,
+          });
+        }
+      }
+    });
+    sandboxHandle.stderr.pipe(split()).on('data', async (line: string) => {
+      console.log(`[hc-spin] | [hc sandbox] ERROR: ${line}`);
+    });
+    sandboxHandle.on('error', (error) => {
+      reject(error);
+    });
+  });
+}
+
 async function spawnSandboxes(
   nAgents: number,
   happPath: string,
@@ -283,6 +371,72 @@ async function spawnSandboxes(
   });
 }
 
+type AgentInstallInfo = {
+  installedAppId: string;
+  agentPubKey: AgentPubKey;
+  appInfo: AppInfo;
+  appPort: number;
+};
+
+async function installAdditionalAgentsViaSandbox(
+  adminPort: number,
+  happPath: string,
+  baseAppId: string,
+  numAgents: number,
+  networkSeeds?: string[],
+  networkSeed?: string,
+): Promise<AgentInstallInfo[]> {
+  const adminWs = await AdminWebsocket.connect({
+    url: new URL(`ws://localhost:${adminPort}`),
+    wsClientOptions: {
+      origin: 'hc-spin',
+    },
+  });
+
+  const agentInfos: AgentInstallInfo[] = [];
+
+  // First agent is already installed by spawnSingleSandbox, so start from agent 2
+  for (let i = 2; i <= numAgents; i++) {
+    const installedAppId = `${baseAppId}-agent-${i}`;
+
+    // Generate agent key
+    const agentPubKey = await adminWs.generateAgentPubKey();
+
+    // Determine network seed for this agent
+    const agentNetworkSeed =
+      networkSeeds && networkSeeds[i - 1] ? networkSeeds[i - 1] : networkSeed;
+
+    // Install app
+    const installRequest: InstallAppRequest = {
+      source: { type: 'path', value: happPath },
+      agent_key: agentPubKey,
+      installed_app_id: installedAppId,
+      ...(agentNetworkSeed ? { network_seed: agentNetworkSeed } : {}),
+    };
+
+    const appInfo = await adminWs.installApp(installRequest);
+    // enable app
+    await adminWs.enableApp({
+      installed_app_id: installedAppId,
+    });
+    // Attach app interface and get port
+    const attachResponse = await adminWs.attachAppInterface({
+      allowed_origins: '*',
+      installed_app_id: installedAppId,
+    });
+
+    agentInfos.push({
+      installedAppId,
+      agentPubKey,
+      appInfo,
+      appPort: attachResponse.port,
+    });
+  }
+
+  await adminWs.client.close();
+  return agentInfos;
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -303,86 +457,241 @@ app.whenReady().then(async () => {
   }
 
   const [bootstrapUrl, signalingUrl] = await startLocalServices();
+  const happPath = happTargetDir ? happTargetDir : CLI_OPTS.happOrWebhappPath.path;
 
-  const [sandboxHandle, sandboxPaths, portsInfo] = await spawnSandboxes(
-    CLI_OPTS.numAgents,
-    happTargetDir ? happTargetDir : CLI_OPTS.happOrWebhappPath.path,
-    CLI_OPTS.bootstrapUrl ? CLI_OPTS.bootstrapUrl : bootstrapUrl,
-    CLI_OPTS.singalingUrl ? CLI_OPTS.singalingUrl : signalingUrl,
-    CLI_OPTS.appId,
-    CLI_OPTS.networkSeed,
-    CLI_OPTS.targetArcFactor,
-  );
+  if (CLI_OPTS.singleConductor) {
+    // Single conductor mode: install all agents on one conductor
+    const firstAgentNetworkSeed =
+      CLI_OPTS.networkSeeds && CLI_OPTS.networkSeeds[0]
+        ? CLI_OPTS.networkSeeds[0]
+        : CLI_OPTS.networkSeed;
 
-  const lairUrls: string[] = [];
-  sandboxPaths.forEach((sandbox) => {
-    const conductorConfigPath = path.join(sandbox, 'conductor-config.yaml');
+    const singleSandbox = await spawnSingleSandbox(
+      happPath,
+      CLI_OPTS.bootstrapUrl ? CLI_OPTS.bootstrapUrl : bootstrapUrl,
+      CLI_OPTS.singalingUrl ? CLI_OPTS.singalingUrl : signalingUrl,
+      CLI_OPTS.appId,
+      firstAgentNetworkSeed,
+      CLI_OPTS.targetArcFactor,
+    );
+
+    SANDBOX_PROCESSES.push(singleSandbox.sandboxHandle);
+
+    // Get lair URL from conductor config
+    const conductorConfigPath = path.join(singleSandbox.sandboxPath, 'conductor-config.yaml');
     const configStr = fs.readFileSync(conductorConfigPath, 'utf-8');
     const lines = configStr.split('\n');
+    let lairUrl: string | undefined;
     for (const line of lines) {
       if (line.includes('connection_url')) {
-        //   connection_url: unix:///tmp/NgYtyB9jdYSC6BlmNTyra/keystore/socket?k=c-B-bRZIObKsh9c5q899hWjAWsWT28DNQUSElAFLJic
-        const lairUrl = line.split('connection_url:')[1].trim();
-        lairUrls.push(lairUrl);
-        // console.log('Got lairUrl form conductor-config.yaml: ', lairUrl);
+        lairUrl = line.split('connection_url:')[1].trim();
         break;
       }
     }
-  });
+    if (!lairUrl) throw new Error('Could not find lair URL in conductor config');
 
-  SANDBOX_PROCESSES.push(sandboxHandle);
+    // Install additional agents (agents 2 to N)
+    const additionalAgents =
+      CLI_OPTS.numAgents > 1
+        ? await installAdditionalAgentsViaSandbox(
+            singleSandbox.adminPort,
+            happPath,
+            CLI_OPTS.appId,
+            CLI_OPTS.numAgents,
+            CLI_OPTS.networkSeeds,
+            CLI_OPTS.networkSeed,
+          )
+        : [];
 
-  // open browser window for each sandbox
-  //
-  for (let i = 0; i < CLI_OPTS.numAgents; i++) {
-    const zomeCallSigner = await rustUtils.ZomeCallSigner.connect(lairUrls[i], 'pass');
-
-    const adminPort = portsInfo[i].admin_port;
+    // Get first agent's info and attach app interface
     const adminWs = await AdminWebsocket.connect({
-      url: new URL(`ws://localhost:${adminPort}`),
+      url: new URL(`ws://localhost:${singleSandbox.adminPort}`),
       wsClientOptions: {
         origin: 'hc-spin',
       },
     });
 
-    const appAuthTokenResponse = await adminWs.issueAppAuthenticationToken({
+    // Ensure app is enabled (though hc sandbox generate should already do this)
+    await adminWs.enableApp({
       installed_app_id: CLI_OPTS.appId,
-      single_use: false,
-      expiry_seconds: 999999,
     });
 
-    const appPort = portsInfo[i].app_ports[0];
-    const appWs = await AppWebsocket.connect({
-      url: new URL(`ws://localhost:${appPort}`),
+    // Attach app interface for first agent
+    const firstAgentAttachResponse = await adminWs.attachAppInterface({
+      allowed_origins: '*',
+      installed_app_id: CLI_OPTS.appId,
+    });
+
+    // Get first agent's app info
+    const firstAgentAppWs = await AppWebsocket.connect({
+      url: new URL(`ws://localhost:${firstAgentAttachResponse.port}`),
       wsClientOptions: {
         origin: 'hc-spin',
       },
-      token: appAuthTokenResponse.token,
+      token: (
+        await adminWs.issueAppAuthenticationToken({
+          installed_app_id: CLI_OPTS.appId,
+          single_use: false,
+          expiry_seconds: 999999,
+        })
+      ).token,
     });
-    const appInfo = await appWs.appInfo();
-    if (!appInfo) throw new Error('AppInfo is null.');
-    const happWindow = await createHappWindow(
+    const firstAgentAppInfo = await firstAgentAppWs.appInfo();
+    if (!firstAgentAppInfo) throw new Error('First agent AppInfo is null.');
+
+    // Verify all apps are installed
+    const allApps = await adminWs.listApps({});
+    console.log(
+      `[hc-spin] | Installed apps: ${allApps.map((app) => app.installed_app_id).join(', ')}`,
+    );
+
+    // Create windows for all agents
+    const zomeCallSigner = await rustUtils.ZomeCallSigner.connect(lairUrl, 'pass');
+
+    // First agent
+    const firstAgentToken = (
+      await adminWs.issueAppAuthenticationToken({
+        installed_app_id: CLI_OPTS.appId,
+        single_use: false,
+        expiry_seconds: 999999,
+      })
+    ).token;
+
+    const firstHappWindow = await createHappWindow(
       CLI_OPTS.uiSource,
       CLI_OPTS.appId,
-      i + 1,
-      appPort,
-      appAuthTokenResponse.token,
+      1,
+      firstAgentAttachResponse.port,
+      firstAgentToken,
       DATA_ROOT_DIR,
     );
-    // We need to add the window to the window map before loading its UI, otherwise
-    // zome calls can be made before handleSignZomeCall() can verify that the
-    // zome call is made from an authorized window (https://github.com/holochain/hc-spin/issues/30)
-    WINDOW_INFO_MAP[happWindow.webContents.id] = {
-      agentPubKey: appInfo.agent_pub_key,
+    WINDOW_INFO_MAP[firstHappWindow.webContents.id] = {
+      agentPubKey: firstAgentAppInfo.agent_pub_key,
       zomeCallSigner,
     };
     await loadHappWindow(
-      happWindow,
+      firstHappWindow,
       CLI_OPTS.uiSource,
       CLI_OPTS.happOrWebhappPath,
-      i + 1,
+      1,
       CLI_OPTS.openDevtools,
     );
+
+    // Additional agents
+    for (const agentInfo of additionalAgents) {
+      const agentNum = parseInt(agentInfo.installedAppId.split('-agent-')[1]);
+      const agentToken = (
+        await adminWs.issueAppAuthenticationToken({
+          installed_app_id: agentInfo.installedAppId,
+          single_use: false,
+          expiry_seconds: 999999,
+        })
+      ).token;
+
+      const happWindow = await createHappWindow(
+        CLI_OPTS.uiSource,
+        agentInfo.installedAppId,
+        agentNum,
+        agentInfo.appPort,
+        agentToken,
+        DATA_ROOT_DIR,
+      );
+      WINDOW_INFO_MAP[happWindow.webContents.id] = {
+        agentPubKey: agentInfo.agentPubKey,
+        zomeCallSigner,
+      };
+      await loadHappWindow(
+        happWindow,
+        CLI_OPTS.uiSource,
+        CLI_OPTS.happOrWebhappPath,
+        agentNum,
+        CLI_OPTS.openDevtools,
+      );
+    }
+
+    await adminWs.client.close();
+  } else {
+    // Multi-conductor mode: existing behavior
+    const [sandboxHandle, sandboxPaths, portsInfo] = await spawnSandboxes(
+      CLI_OPTS.numAgents,
+      happPath,
+      CLI_OPTS.bootstrapUrl ? CLI_OPTS.bootstrapUrl : bootstrapUrl,
+      CLI_OPTS.singalingUrl ? CLI_OPTS.singalingUrl : signalingUrl,
+      CLI_OPTS.appId,
+      CLI_OPTS.networkSeed,
+      CLI_OPTS.targetArcFactor,
+    );
+
+    const lairUrls: string[] = [];
+    sandboxPaths.forEach((sandbox) => {
+      const conductorConfigPath = path.join(sandbox, 'conductor-config.yaml');
+      const configStr = fs.readFileSync(conductorConfigPath, 'utf-8');
+      const lines = configStr.split('\n');
+      for (const line of lines) {
+        if (line.includes('connection_url')) {
+          //   connection_url: unix:///tmp/NgYtyB9jdYSC6BlmNTyra/keystore/socket?k=c-B-bRZIObKsh9c5q899hWjAWsWT28DNQUSElAFLJic
+          const lairUrl = line.split('connection_url:')[1].trim();
+          lairUrls.push(lairUrl);
+          // console.log('Got lairUrl form conductor-config.yaml: ', lairUrl);
+          break;
+        }
+      }
+    });
+
+    SANDBOX_PROCESSES.push(sandboxHandle);
+
+    // open browser window for each sandbox
+    //
+    for (let i = 0; i < CLI_OPTS.numAgents; i++) {
+      const zomeCallSigner = await rustUtils.ZomeCallSigner.connect(lairUrls[i], 'pass');
+
+      const adminPort = portsInfo[i].admin_port;
+      const adminWs = await AdminWebsocket.connect({
+        url: new URL(`ws://localhost:${adminPort}`),
+        wsClientOptions: {
+          origin: 'hc-spin',
+        },
+      });
+
+      const appAuthTokenResponse = await adminWs.issueAppAuthenticationToken({
+        installed_app_id: CLI_OPTS.appId,
+        single_use: false,
+        expiry_seconds: 999999,
+      });
+
+      const appPort = portsInfo[i].app_ports[0];
+      const appWs = await AppWebsocket.connect({
+        url: new URL(`ws://localhost:${appPort}`),
+        wsClientOptions: {
+          origin: 'hc-spin',
+        },
+        token: appAuthTokenResponse.token,
+      });
+      const appInfo = await appWs.appInfo();
+      if (!appInfo) throw new Error('AppInfo is null.');
+      const happWindow = await createHappWindow(
+        CLI_OPTS.uiSource,
+        CLI_OPTS.appId,
+        i + 1,
+        appPort,
+        appAuthTokenResponse.token,
+        DATA_ROOT_DIR,
+      );
+      // We need to add the window to the window map before loading its UI, otherwise
+      // zome calls can be made before handleSignZomeCall() can verify that the
+      // zome call is made from an authorized window (https://github.com/holochain/hc-spin/issues/30)
+      WINDOW_INFO_MAP[happWindow.webContents.id] = {
+        agentPubKey: appInfo.agent_pub_key,
+        zomeCallSigner,
+      };
+      await loadHappWindow(
+        happWindow,
+        CLI_OPTS.uiSource,
+        CLI_OPTS.happOrWebhappPath,
+        i + 1,
+        CLI_OPTS.openDevtools,
+      );
+    }
   }
 
   // app.on('activate', function () {
