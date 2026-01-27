@@ -3,6 +3,8 @@ import path from 'path';
 
 import { UISource } from './windows';
 
+export type Transport = 'quic' | 'webrtc';
+
 export type CliOpts = {
   appId?: string;
   holochainPath?: string;
@@ -16,6 +18,7 @@ export type CliOpts = {
   bootstrapUrl?: string;
   openDevtools?: boolean;
   singleConductor?: boolean;
+  transport?: Transport;
 };
 
 export type CliOptsValidated = {
@@ -31,6 +34,7 @@ export type CliOptsValidated = {
   happOrWebhappPath: HappOrWebhappPath;
   openDevtools: boolean;
   singleConductor: boolean;
+  transport: Transport;
 };
 
 export type HappOrWebhappPath = {
@@ -86,6 +90,15 @@ export function validateCliArgs(
       'Only one of --ui-port and --ui-path is allowed at the same time but got values for both.',
     );
   }
+  if (
+    cliOpts.transport !== undefined &&
+    cliOpts.transport !== 'quic' &&
+    cliOpts.transport !== 'webrtc'
+  ) {
+    throw new Error(
+      `The --transport option must be either 'quic' or 'webrtc' but got: ${cliOpts.transport}`,
+    );
+  }
 
   const appId = cliOpts.appId ? cliOpts.appId : path.parse(path.basename(cliArgs[0])).name;
   const holochainPath = cliOpts.holochainPath;
@@ -121,5 +134,6 @@ export function validateCliArgs(
       ? { type: 'happ', path: happOrWebhappPath }
       : { type: 'webhapp', path: happOrWebhappPath },
     openDevtools: cliOpts.openDevtools ? true : false,
+    transport: cliOpts.transport || 'quic',
   };
 }

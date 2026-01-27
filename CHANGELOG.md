@@ -9,6 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 ### Removed
 
+## 2026-01-22: v0.600.2-rc.0
+
+### Changed
+- Added a CLI option `--transport` to choose between `quic` and `webrtc`. `quic` is used in combination with the iroh transport in Holochain, `webrtc` with tx5. The default transport in Holochain is iroh, so the default for hc-spin is `quic`. If no transport option is passed in on the command line, `quic` is used.
+
 ## 2026-01-22: v0.600.1-rc.0
 
 ### Changed
