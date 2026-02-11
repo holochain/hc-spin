@@ -21,7 +21,7 @@ import path from 'path';
 import split from 'split';
 
 import { menu } from './menu';
-import { Transport, validateCliArgs } from './validateArgs';
+import { validateCliArgs } from './validateArgs';
 import { createHappWindow, loadHappWindow } from './windows';
 
 const rustUtils = require('@holochain/hc-spin-rust-utils');
@@ -63,14 +63,10 @@ cli
     'Port pointing to a localhost dev server that serves your UI assets.',
   )
   .option(
-    '--signaling-url <url>',
-    'Url of the signaling server to use. By default, hc spin spins up a local development signaling server for you but this argument allows you to specify a custom one.',
+    '--relay-url <url>',
+    'Url of the relay server to use. By default, hc spin spins up a local development relay server for you but this argument allows you to specify a custom one.',
   )
-  .option('--open-devtools', 'Automatically open the devtools on startup.')
-  .option(
-    '--transport <quic|webrtc>',
-    'Configure network transport. Defaults to quic, compatible with the iroh transport used in in Holochain by default. Set to `webrtc` for tx5 transport.',
-  );
+  .option('--open-devtools', 'Automatically open the devtools on startup.');
 
 cli.parse();
 // console.log('Got CLI opts: ', cli.opts());
@@ -175,26 +171,26 @@ const handleSignZomeCall = async (
   return signedZomeCall;
 };
 
-async function startLocalServices(transport: Transport): Promise<[string, string]> {
+async function startLocalServices(): Promise<[string, string]> {
   const localServicesHandle = childProcess.spawn('kitsune2-bootstrap-srv');
   return new Promise((resolve) => {
     let bootStrapUrl;
-    let signalUrl;
+    let relayUrl;
     let bootstrapRunning = false;
-    let signalRunnig = false;
+    let relayRunning = false;
     localServicesHandle.stdout.pipe(split()).on('data', async (line: string) => {
       console.log(`[hc-spin] | [kitsune2-bootstrap-srv]: ${line}`);
       if (line.includes('#kitsune2_bootstrap_srv#listening#')) {
         const hostAndPort = line.split('#kitsune2_bootstrap_srv#listening#')[1].split('#')[0];
         bootStrapUrl = `http://${hostAndPort}`;
-        signalUrl = transport === 'quic' ? `http://${hostAndPort}` : `ws://${hostAndPort}`;
+        relayUrl = `http://${hostAndPort}`;
       }
       if (line.includes('#kitsune2_bootstrap_srv#running#')) {
         bootstrapRunning = true;
-        signalRunnig = true;
+        relayRunning = true;
       }
-      if (bootstrapRunning && signalRunnig && bootStrapUrl && signalUrl)
-        resolve([bootStrapUrl, signalUrl]);
+      if (bootstrapRunning && relayRunning && bootStrapUrl && relayUrl)
+        resolve([bootStrapUrl, relayUrl]);
     });
     localServicesHandle.stderr.pipe(split()).on('data', async (line: string) => {
       console.log(`[hc-spin] | [hc run-local-services] ERROR: ${line}`);
@@ -211,9 +207,8 @@ async function spawnSandboxes(
   nAgents: number,
   happPath: string,
   bootStrapUrl: string,
-  signalUrl: string,
+  relayUrl: string,
   appId: string,
-  transport: Transport,
   networkSeed?: string,
   targetArcFactor?: number,
 ): Promise<
@@ -244,7 +239,7 @@ async function spawnSandboxes(
   if (targetArcFactor !== undefined) {
     generateArgs.push('--target-arc-factor', targetArcFactor.toString());
   }
-  generateArgs.push('--bootstrap', bootStrapUrl, transport, signalUrl);
+  generateArgs.push('--bootstrap', bootStrapUrl, 'quic', relayUrl);
 
   let readyConductors = 0;
   const portsInfo: Record<number, PortsInfo> = {};
@@ -306,15 +301,14 @@ app.whenReady().then(async () => {
     );
   }
 
-  const [bootstrapUrl, signalingUrl] = await startLocalServices(CLI_OPTS.transport);
+  const [bootstrapUrl, relayUrl] = await startLocalServices();
 
   const [sandboxHandle, sandboxPaths, portsInfo] = await spawnSandboxes(
     CLI_OPTS.numAgents,
     happTargetDir ? happTargetDir : CLI_OPTS.happOrWebhappPath.path,
     CLI_OPTS.bootstrapUrl ? CLI_OPTS.bootstrapUrl : bootstrapUrl,
-    CLI_OPTS.singalingUrl ? CLI_OPTS.singalingUrl : signalingUrl,
+    CLI_OPTS.relayUrl ? CLI_OPTS.relayUrl : relayUrl,
     CLI_OPTS.appId,
-    CLI_OPTS.transport,
     CLI_OPTS.networkSeed,
     CLI_OPTS.targetArcFactor,
   );
