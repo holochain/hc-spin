@@ -11,7 +11,7 @@ export type CliOpts = {
   targetArcFactor?: number;
   uiPath?: string;
   uiPort?: number;
-  signalingUrl?: string;
+  relayUrl?: string;
   bootstrapUrl?: string;
   openDevtools?: boolean;
   forceAdminPorts?: string;
@@ -24,7 +24,7 @@ export type CliOptsValidated = {
   networkSeed: string | undefined;
   targetArcFactor: number | undefined;
   uiSource: UISource;
-  singalingUrl: string | undefined;
+  relayUrl: string | undefined;
   bootstrapUrl: string | undefined;
   happOrWebhappPath: HappOrWebhappPath;
   openDevtools: boolean;
@@ -114,7 +114,7 @@ export function validateCliArgs(
       : cliOpts.uiPort
         ? { type: 'port', port: cliOpts.uiPort }
         : { type: 'path', path: path.join(appDataRootDir, 'apps', appId, 'ui') },
-    singalingUrl: cliOpts.signalingUrl,
+    relayUrl: cliOpts.relayUrl,
     bootstrapUrl: cliOpts.bootstrapUrl,
     happOrWebhappPath: isHapp
       ? { type: 'happ', path: happOrWebhappPath }
