@@ -7,7 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 ### Fixed
 ### Changed
+- Holochain is now run with the iroh transport. The argument `--signaling-url` has been replaced with `--relay-url`.
 ### Removed
+- Removed CLI option `--transport` as holochain is run with `quic` iroh transport.
 
 ## 2026-01-22: v0.600.2-rc.0
 
