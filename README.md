@@ -50,7 +50,7 @@ Options:
   --network-seed <string>    Install the app with a specific network seed.
   --ui-path <path>           Path to the folder containing the index.html of the webhapp's UI.
   --ui-port <number>         Port pointing to a localhost dev server that serves your UI assets.
-  --signaling-url <url>      Url of the signaling server to use. By default, hc spin spins up a local development signaling server for you
+  --relay-url <url>          Url of the relay server to use. By default, hc spin spins up a local development relay server for you
                              but this argument allows you to specify a custom one.
   --open-devtools            Automatically open the devtools on startup.
   -h, --help                 display help for command
