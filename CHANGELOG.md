@@ -4,8 +4,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## \[Unreleased\]
 
-### Added
-### Fixed
+## 2026-02-13: v0.600.3-rc.0
+
 ### Changed
 - Holochain is now run with the iroh transport. The argument `--signaling-url` has been replaced with `--relay-url`.
 ### Removed
