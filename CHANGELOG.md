@@ -4,6 +4,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## \[Unreleased\]
 
+## 2026-05-14: v0.601.0
+
+### Changed
+
+- Bumped to holochain 0.6.1
+
 ## 2026-02-13: v0.600.3-rc.0
 
 ### Changed
