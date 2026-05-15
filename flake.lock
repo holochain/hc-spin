@@ -178,23 +178,14 @@
     },
     "root": {
       "inputs": {
-        "flake-parts": [
-          "holonix",
-          "flake-parts"
-        ],
+        "flake-parts": ["holonix", "flake-parts"],
         "holonix": "holonix",
-        "nixpkgs": [
-          "holonix",
-          "nixpkgs"
-        ]
+        "nixpkgs": ["holonix", "nixpkgs"]
       }
     },
     "rust-overlay": {
       "inputs": {
-        "nixpkgs": [
-          "holonix",
-          "nixpkgs"
-        ]
+        "nixpkgs": ["holonix", "nixpkgs"]
       },
       "locked": {
         "lastModified": 1766371695,

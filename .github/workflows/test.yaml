@@ -12,7 +12,7 @@ jobs:
 
       - name: Install dependencies
         run: yarn
-      
+
       - name: Lint
         run: yarn lint:check
 

@@ -24,13 +24,15 @@
   },
   "scripts": {
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
     "lint:check": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "yarn run typecheck:node && yarn run typecheck:web",
     "start": "node dist/cli.js",
-    "build": "rimraf dist && yarn run typecheck && electron-vite build && mv ./out ./dist && cp ./cli/cli.js ./dist/cli.js && node ./scripts/replace-electron-version.js"
+    "build": "rimraf dist && yarn run typecheck && electron-vite build && mv ./out ./dist && cp ./cli/cli.js ./dist/cli.js && node ./scripts/replace-electron-version.js",
+    "prepublishOnly": "npm run format:check && npm run lint:check && npm run build"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
