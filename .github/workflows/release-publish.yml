@@ -1,0 +1,13 @@
+name: Publish Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish:
+    uses: holochain/actions/.github/workflows/nodejs-publish-release.yml@v1.9.0
+    with:
+      package_manager: yarn
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
