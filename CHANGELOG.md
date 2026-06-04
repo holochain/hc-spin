@@ -1,8 +1,26 @@
 # Changelog
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+All notable changes to this project will be documented in this file.
 
-## \[Unreleased\]
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## \[[0.700.0-dev.2](https://github.com/holochain/hc-spin/compare/v0.700.0-dev.1...v0.700.0-dev.2)\] - 2026-06-04
+
+### Miscellaneous Tasks
+
+- Add prepublish script to try to ensure an up-to-date publish by @ThetaSinner
+
+### CI
+
+- Update the Node.js release workflows by @cdunster in [#64](https://github.com/holochain/hc-spin/pull/64)
+- Add missing write permissions in release workflows by @cdunster
+- Add workflow to publish the prepared release by @cdunster in [#63](https://github.com/holochain/hc-spin/pull/63)
+- Add workflow to prepare a release by @cdunster
+
+### First-time Contributors
+
+- @cdunster made their first contribution in [#64](https://github.com/holochain/hc-spin/pull/64)
+- @ThetaSinner made their first contribution
 
 ## 2026-02-13: v0.700.0-dev.1
 
