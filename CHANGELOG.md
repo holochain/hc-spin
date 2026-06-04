@@ -1,5 +1,51 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## \[[0.600.1-rc.1](https://github.com/holochain/hc-spin/compare/v0.600.1-rc.0...v0.600.1-rc.1)\] - 2026-06-04
+
+### Features
+
+- Holochain uses iroh transport, replace --signaling-url with --relay-url by @mattyg in [#56](https://github.com/holochain/hc-spin/pull/56)
+
+### Miscellaneous Tasks
+
+- Add prepublish script to try to ensure an up-to-date publish by @ThetaSinner
+
+### Build System
+
+- Release v0.700.0-dev.1 by @mattyg in [#59](https://github.com/holochain/hc-spin/pull/59)
+- Bump flake lock by @mattyg
+
+### CI
+
+- Update the Node.js release workflows by @cdunster in [#64](https://github.com/holochain/hc-spin/pull/64)
+- Add missing write permissions in release workflows by @cdunster
+- Add workflow to publish the prepared release by @cdunster in [#63](https://github.com/holochain/hc-spin/pull/63)
+- Add workflow to prepare a release by @cdunster
+
+### First-time Contributors
+
+- @cdunster made their first contribution in [#64](https://github.com/holochain/hc-spin/pull/64)
+- @ThetaSinner made their first contribution
+
+## \[[0.600.1-rc.0](https://github.com/holochain/hc-spin/compare/v0.600.0...v0.600.1-rc.0)\] - 2026-01-13
+
+### Features
+
+- Bump to holochain 0.7.0-dev.7 by @matthme in [#52](https://github.com/holochain/hc-spin/pull/52)
+- New argument --force-admin-ports which is passed to 'hc sandbox' (#50) by @mattyg in [#50](https://github.com/holochain/hc-spin/pull/50)
+  - Feat: new argument --force-admin-ports which is passed to 'hc sandbox'
+  - Docs: changelog
+  - Chore: lint
+
+### Documentation
+
+- Added documentation about how to update to a new holochain version by @matthme in [#51](https://github.com/holochain/hc-spin/pull/51)
+# Changelog
+
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## \[Unreleased\]
