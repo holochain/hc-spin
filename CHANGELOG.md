@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## \[[0.700.0-dev.4](https://github.com/holochain/hc-spin/compare/v0.700.0-dev.3...v0.700.0-dev.4)\] - 2026-06-08
+
+### CI
+
+- Update checkout action in test workflow by @cdunster in [#70](https://github.com/holochain/hc-spin/pull/70)
+- Update release automation actions to fix publish issue by @cdunster
+  - Publishing was failing due to how the release notes were generated and packaged. v1.11.0 fixes that issue.
+
 ## \[[0.700.0-dev.3](https://github.com/holochain/hc-spin/compare/v0.700.0-dev.2...v0.700.0-dev.3)\] - 2026-06-08
 
 ### Miscellaneous Tasks
