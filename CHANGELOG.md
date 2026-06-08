@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## \[[0.700.0-dev.3](https://github.com/holochain/hc-spin/compare/v0.700.0-dev.2...v0.700.0-dev.3)\] - 2026-06-08
+
+### Miscellaneous Tasks
+
+- Add direnv support to use the Nix devShell by @cdunster
+
+### CI
+
+- Fix string formatting in release-prepare workflow by @cdunster in [#68](https://github.com/holochain/hc-spin/pull/68)
+- Add formatting check step to PR tests by @cdunster
+
 ## \[[0.700.0-dev.2](https://github.com/holochain/hc-spin/compare/v0.700.0-dev.1...v0.700.0-dev.2)\] - 2026-06-04
 
 ### Miscellaneous Tasks
