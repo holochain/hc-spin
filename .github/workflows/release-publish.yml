@@ -12,12 +12,10 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false
           token: ''
@@ -30,23 +28,18 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo "value=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
-
-      - name: Pack npm artifact
-        id: pack
-        run: echo "tarball=$(npm pack)" >> "$GITHUB_OUTPUT"
+        run: echo "value=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
       - name: Publish to npm
         env:
           RELEASE_VERSION: ${{ steps.version.outputs.value }}
         run: |
-          PACKAGE_NAME=$(node -p "require('./package.json').name")
-          if npm view "$PACKAGE_NAME@$RELEASE_VERSION" > /dev/null 2>&1; then
-            echo "::error::$PACKAGE_NAME@$RELEASE_VERSION is already published to npm. Was this release already published?"
-            exit 1
-          fi
-          if [[ "$RELEASE_VERSION" == *"-"* ]]; then
-            npm publish "${{ steps.pack.outputs.tarball }}" --access public --provenance --tag next --verbose
+          if npm view "@holochain/hc-spin@$RELEASE_VERSION" > /dev/null 2>&1; then
+            echo "Version $RELEASE_VERSION already published, skipping."
           else
-            npm publish "${{ steps.pack.outputs.tarball }}" --access public --provenance --verbose
+            if [[ "$RELEASE_VERSION" == *"-"* ]]; then
+              npm publish --access public --provenance --tag next
+            else
+              npm publish --access public --provenance
+            fi
           fi
