@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## \[[0.700.0-dev.6](https://github.com/holochain/hc-spin/compare/v0.700.0-dev.4...v0.700.0-dev.6)\] - 2026-06-09
+
+### Miscellaneous Tasks
+
+- Release v0.700.0-dev.5 by @cdunster in [#73](https://github.com/holochain/hc-spin/pull/73)
+
+### CI
+
+- Update release automation actions and remove NPM_TOKEN secret by @cdunster in [#72](https://github.com/holochain/hc-spin/pull/72)
+  - The latest version of the release automation workflow uses trusted publishers to publish packages instead of a token.
+
+### Other Changes
+
+- Revert "WIP: inline the publish workflow to test"
+- Copy peerkit publish workflow
+- Add verbose logging to publish
+- Remove label check
+- Inline the publish workflow to test
+- Trigger publish on this branch too, for testing
+- Use a branch to test without PRs
+
 ## \[[0.700.0-dev.5](https://github.com/holochain/hc-spin/compare/v0.700.0-dev.4...v0.700.0-dev.5)\] - 2026-06-09
 
 ### CI
