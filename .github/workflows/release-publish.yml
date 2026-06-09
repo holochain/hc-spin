@@ -5,10 +5,64 @@ on:
     branches: [main, trying-to-release]
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      is-release: ${{ steps.label.outputs.result }}
+    steps:
+      - name: Check for hra-release label on merged PR
+        id: label
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          RESULT=$(gh api repos/${{ github.repository }}/commits/${{ github.sha }}/pulls \
+            --jq 'any(.[].labels[].name; . == "hra-release")' 2>/dev/null || echo "false")
+          echo "result=$RESULT" >> "$GITHUB_OUTPUT"
+
   publish:
+    needs: check
+    if: needs.check.outputs.is-release == 'true'
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
-    uses: holochain/actions/.github/workflows/nodejs-publish-release.yml@fix-nodejs-publish
-    with:
-      package_manager: yarn
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+          token: ''
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Get version
+        id: version
+        run: echo "value=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Pack npm artifact
+        id: pack
+        run: echo "tarball=$(npm pack)" >> "$GITHUB_OUTPUT"
+
+      - name: Publish to npm
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          if npm view "$PACKAGE_NAME@$RELEASE_VERSION" > /dev/null 2>&1; then
+            echo "::error::$PACKAGE_NAME@$RELEASE_VERSION is already published to npm. Was this release already published?"
+            exit 1
+          fi
+          if [[ "$RELEASE_VERSION" == *"-"* ]]; then
+            npm publish "${{ steps.pack.outputs.tarball }}" --access public --provenance --tag next
+          else
+            npm publish "${{ steps.pack.outputs.tarball }}" --access public --provenance
+          fi
