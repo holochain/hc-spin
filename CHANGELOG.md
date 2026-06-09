@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## \[[0.700.0-dev.5](https://github.com/holochain/hc-spin/compare/v0.700.0-dev.4...v0.700.0-dev.5)\] - 2026-06-09
+
+### CI
+
+- Update release automation actions and remove NPM_TOKEN secret by @cdunster in [#72](https://github.com/holochain/hc-spin/pull/72)
+  - The latest version of the release automation workflow uses trusted publishers to publish packages instead of a token.
+
 ## \[[0.700.0-dev.4](https://github.com/holochain/hc-spin/compare/v0.700.0-dev.3...v0.700.0-dev.4)\] - 2026-06-08
 
 ### CI
