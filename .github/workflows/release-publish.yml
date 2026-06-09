@@ -6,40 +6,9 @@ on:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
-          package-manager-cache: false
-          token: ''
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Build
-        run: yarn build
-
-      - name: Get version
-        id: version
-        run: echo "value=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-
-      - name: Publish to npm
-        env:
-          RELEASE_VERSION: ${{ steps.version.outputs.value }}
-        run: |
-          if npm view "@holochain/hc-spin@$RELEASE_VERSION" > /dev/null 2>&1; then
-            echo "Version $RELEASE_VERSION already published, skipping."
-          else
-            if [[ "$RELEASE_VERSION" == *"-"* ]]; then
-              npm publish --access public --provenance --tag next
-            else
-              npm publish --access public --provenance
-            fi
-          fi
+    uses: holochain/actions/.github/workflows/nodejs-publish-release.yml@fix-nodejs-publish
+    with:
+      package_manager: yarn
