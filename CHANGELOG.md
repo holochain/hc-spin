@@ -4,50 +4,6 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## \[[0.700.0-dev.5](https://github.com/holochain/hc-spin/compare/v0.700.0-dev.4...v0.700.0-dev.5)\] - 2026-06-09
-
-### CI
-
-- Update release automation actions and remove NPM_TOKEN secret by @cdunster in [#72](https://github.com/holochain/hc-spin/pull/72)
-  - The latest version of the release automation workflow uses trusted publishers to publish packages instead of a token.
-
-## \[[0.700.0-dev.4](https://github.com/holochain/hc-spin/compare/v0.700.0-dev.3...v0.700.0-dev.4)\] - 2026-06-08
-
-### CI
-
-- Update checkout action in test workflow by @cdunster in [#70](https://github.com/holochain/hc-spin/pull/70)
-- Update release automation actions to fix publish issue by @cdunster
-  - Publishing was failing due to how the release notes were generated and packaged. v1.11.0 fixes that issue.
-
-## \[[0.700.0-dev.3](https://github.com/holochain/hc-spin/compare/v0.700.0-dev.2...v0.700.0-dev.3)\] - 2026-06-08
-
-### Miscellaneous Tasks
-
-- Add direnv support to use the Nix devShell by @cdunster
-
-### CI
-
-- Fix string formatting in release-prepare workflow by @cdunster in [#68](https://github.com/holochain/hc-spin/pull/68)
-- Add formatting check step to PR tests by @cdunster
-
-## \[[0.700.0-dev.2](https://github.com/holochain/hc-spin/compare/v0.700.0-dev.1...v0.700.0-dev.2)\] - 2026-06-04
-
-### Miscellaneous Tasks
-
-- Add prepublish script to try to ensure an up-to-date publish by @ThetaSinner
-
-### CI
-
-- Update the Node.js release workflows by @cdunster in [#64](https://github.com/holochain/hc-spin/pull/64)
-- Add missing write permissions in release workflows by @cdunster
-- Add workflow to publish the prepared release by @cdunster in [#63](https://github.com/holochain/hc-spin/pull/63)
-- Add workflow to prepare a release by @cdunster
-
-### First-time Contributors
-
-- @cdunster made their first contribution in [#64](https://github.com/holochain/hc-spin/pull/64)
-- @ThetaSinner made their first contribution
-
 ## 2026-02-13: v0.700.0-dev.1
 
 ### Changed
