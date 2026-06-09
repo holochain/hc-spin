@@ -9,6 +9,6 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    uses: holochain/actions/.github/workflows/nodejs-publish-release.yml@v1.12.0
+    uses: holochain/actions/.github/workflows/nodejs-publish-release.yml@fix-nodejs-publish
     with:
       package_manager: yarn
