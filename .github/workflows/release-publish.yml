@@ -5,23 +5,7 @@ on:
     branches: [main, trying-to-release]
 
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    outputs:
-      is-release: ${{ steps.label.outputs.result }}
-    steps:
-      - name: Check for hra-release label on merged PR
-        id: label
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          RESULT=$(gh api repos/${{ github.repository }}/commits/${{ github.sha }}/pulls \
-            --jq 'any(.[].labels[].name; . == "hra-release")' 2>/dev/null || echo "false")
-          echo "result=$RESULT" >> "$GITHUB_OUTPUT"
-
   publish:
-    needs: check
-    if: needs.check.outputs.is-release == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
