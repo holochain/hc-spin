@@ -46,7 +46,7 @@ jobs:
             exit 1
           fi
           if [[ "$RELEASE_VERSION" == *"-"* ]]; then
-            npm publish "${{ steps.pack.outputs.tarball }}" --access public --provenance --tag next
+            npm publish "${{ steps.pack.outputs.tarball }}" --access public --provenance --tag next --verbose
           else
-            npm publish "${{ steps.pack.outputs.tarball }}" --access public --provenance
+            npm publish "${{ steps.pack.outputs.tarball }}" --access public --provenance --verbose
           fi
