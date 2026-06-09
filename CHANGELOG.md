@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## \[[0.700.0-dev.7](https://github.com/holochain/hc-spin/compare/v0.700.0-dev.6...v0.700.0-dev.7)\] - 2026-06-09
+
 ## \[[0.700.0-dev.6](https://github.com/holochain/hc-spin/compare/v0.700.0-dev.4...v0.700.0-dev.6)\] - 2026-06-09
 
 ### Miscellaneous Tasks
