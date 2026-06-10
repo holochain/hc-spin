@@ -10,33 +10,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 - Bump package dev version as this was published whilst testing by @cdunster
   - Whilst testing the release automation on a branch, new versions were published so we need to bump the version.
-- Release v0.700.0-dev.5 by @cdunster in [#73](https://github.com/holochain/hc-spin/pull/73)
-- Release v0.700.0-dev.4 by @cdunster in [#71](https://github.com/holochain/hc-spin/pull/71)
-- Release v0.700.0-dev.3 by @cdunster in [#69](https://github.com/holochain/hc-spin/pull/69)
 - Add direnv support to use the Nix devShell by @cdunster
-- Release v0.700.0-dev.2 by @cdunster in [#67](https://github.com/holochain/hc-spin/pull/67)
 - Add prepublish script to try to ensure an up-to-date publish by @ThetaSinner
 
 ### CI
 
-- Update release automation actions by @cdunster
-  - The latest version of the release automation workflow uses Node.js v24 as that works correctly with Trusted Publishers.
-- Update release automation actions and remove NPM_TOKEN secret by @cdunster in [#72](https://github.com/holochain/hc-spin/pull/72)
-  - The latest version of the release automation workflow uses trusted publishers to publish packages instead of a token.
 - Update checkout action in test workflow by @cdunster in [#70](https://github.com/holochain/hc-spin/pull/70)
-- Update release automation actions to fix publish issue by @cdunster
-  - Publishing was failing due to how the release notes were generated and packaged. v1.11.0 fixes that issue.
-- Fix string formatting in release-prepare workflow by @cdunster in [#68](https://github.com/holochain/hc-spin/pull/68)
 - Add formatting check step to PR tests by @cdunster
-- Update the Node.js release workflows by @cdunster in [#64](https://github.com/holochain/hc-spin/pull/64)
-- Add missing write permissions in release workflows by @cdunster
 - Add workflow to publish the prepared release by @cdunster in [#63](https://github.com/holochain/hc-spin/pull/63)
 - Add workflow to prepare a release by @cdunster
-
-### Documentation
-
-- Remove unpublished versions from the changelog by @cdunster in [#79](https://github.com/holochain/hc-spin/pull/79)
-  - These versions were added whilst testing the release automation and some were even done on a dangling branch so removing them should result in git-cliff adding everything in a single version.
 
 ### First-time Contributors
 
