@@ -7,5 +7,5 @@ const majorElectronVersion = electronVersion.replace('^', '').slice(0, 3);
 console.log('electron version: ', majorElectronVersion);
 
 const cliJs = fs.readFileSync('./dist/cli.js', 'utf-8');
-const modifiedCliJs = cliJs.replace('###REPLACE_AT_BUILD_TIME###', majorElectronVersion);
+const modifiedCliJs = cliJs.replaceAll('###REPLACE_AT_BUILD_TIME###', majorElectronVersion);
 fs.writeFileSync('./dist/cli.js', modifiedCliJs);

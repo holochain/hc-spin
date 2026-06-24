@@ -5,7 +5,11 @@ import packageJson from './package.json';
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin({ exclude: ['@holochain/client', 'nanoid', 'get-port'] })],
+    plugins: [
+      externalizeDepsPlugin({
+        exclude: ['@holochain/client', 'nanoid', 'get-port', 'electron-context-menu'],
+      }),
+    ],
     define: {
       __PACKAGE_VERSION__: JSON.stringify(packageJson.version),
       __HOLOCHAIN_VERSION__: JSON.stringify(packageJson.holochainVersion),
