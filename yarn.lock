@@ -611,10 +611,10 @@
     "@eslint/core" "^1.2.1"
     levn "^0.4.1"
 
-"@holochain/client@^0.20.5":
-  version "0.20.5"
-  resolved "https://registry.yarnpkg.com/@holochain/client/-/client-0.20.5.tgz#431a740629ca99e084fd23182229af6363899cb6"
-  integrity sha512-BONSMX3z349broeNaITnq9tOb+tV7DuHuPRHwJBYGZihEhHSSXBx9pWHTHwF/HKBFb/DGovY62VfK0MzfWIMEg==
+"@holochain/client@^0.21.0-rc.0":
+  version "0.21.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@holochain/client/-/client-0.21.0-rc.0.tgz#06885979528f773ceb7fa958439b9be75c3b0720"
+  integrity sha512-7pfWMbRBhKiec/MR3ERU5k/WGyGFXPf6QpKGFpfVJcE5YKQL/OB3hjAx1BvjoO5TIR9MKtQ00Hi9wsZpI1V9Ug==
   dependencies:
     "@bitgo/blake2b" "^3.2.4"
     "@msgpack/msgpack" "^3.1.2"
@@ -622,45 +622,45 @@
     isomorphic-ws "^5.0.0"
     js-base64 "^3.7.8"
     js-sha512 "^0.9.0"
-    libsodium-wrappers "^0.8.4"
+    libsodium-wrappers "^0.8"
     lodash-es "^4.17.21"
     ws "^8.18.3"
 
-"@holochain/hc-spin-rust-utils-darwin-arm64@0.700.0-dev.3":
-  version "0.700.0-dev.3"
-  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-darwin-arm64/-/hc-spin-rust-utils-darwin-arm64-0.700.0-dev.3.tgz#42048d678c05791ed5d7d268333c04246a5f01cc"
-  integrity sha512-1fih5kH4Odh+WIhlGOUgOvsOnqnUNvaQcOWdKCvv+pViI9LWT6aLYQjV7nMthjUI7k9em7bIwTNmQm/TBJrMog==
+"@holochain/hc-spin-rust-utils-darwin-arm64@0.700.0-rc.0":
+  version "0.700.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-darwin-arm64/-/hc-spin-rust-utils-darwin-arm64-0.700.0-rc.0.tgz#6a2e652fc2f82e432352bb13368ec3c3cb1143ac"
+  integrity sha512-IsCM7fe/Aj8kG5njcmbJHV7yeHU0CD8mttDVBx4V0KZyrFUtUflD4c51+O7wKPhv6nGnSk+M/bCOUPN09g5fqQ==
 
-"@holochain/hc-spin-rust-utils-darwin-x64@0.700.0-dev.3":
-  version "0.700.0-dev.3"
-  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-darwin-x64/-/hc-spin-rust-utils-darwin-x64-0.700.0-dev.3.tgz#d3ee2608449a09dd5cb7b7b5e664978adc2162ec"
-  integrity sha512-HR6c/SfqczfauM48JHMrVTAN0mLWNWmhBvtdVCQGG40GqZUy0mJyqckQxQroFjTxnTsaPL8X3WNxF9qKeyO6Rw==
+"@holochain/hc-spin-rust-utils-darwin-x64@0.700.0-rc.0":
+  version "0.700.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-darwin-x64/-/hc-spin-rust-utils-darwin-x64-0.700.0-rc.0.tgz#66ae211320605c8762b6d7f4d558fd81a22751e9"
+  integrity sha512-t9KAbNuKCvQeQA+drRt64LxLzFlRIXDooGZFQTfyzyETNRMsuAkOyoDZh39R+N3v3yDprHPt65yW4vlvTVvMvA==
 
-"@holochain/hc-spin-rust-utils-linux-arm64-gnu@0.700.0-dev.3":
-  version "0.700.0-dev.3"
-  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-linux-arm64-gnu/-/hc-spin-rust-utils-linux-arm64-gnu-0.700.0-dev.3.tgz#cc5b00c43c70c66bb4ff169be3422f03f9da9f8a"
-  integrity sha512-2wZsZcNqFhnNtGHmrvvadon1uit3Vq21w4OQX3ufErYzjU3lsOBcSLhEZg1go4uTfmHcIEx6yMFhWgoIRnni8A==
+"@holochain/hc-spin-rust-utils-linux-arm64-gnu@0.700.0-rc.0":
+  version "0.700.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-linux-arm64-gnu/-/hc-spin-rust-utils-linux-arm64-gnu-0.700.0-rc.0.tgz#f832eed3b5b54c376477d107a277de95a6861ef9"
+  integrity sha512-457yqKmh+mFlUqAURIUwpl37ue/UrJwhloVnazR7d2UOFAvXp5+G24Fm016DfftvykZHxU0+THHRzj9fOuH2KQ==
 
-"@holochain/hc-spin-rust-utils-linux-x64-gnu@0.700.0-dev.3":
-  version "0.700.0-dev.3"
-  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-linux-x64-gnu/-/hc-spin-rust-utils-linux-x64-gnu-0.700.0-dev.3.tgz#bf3d0b0b05b7ec025e844cea0e7f10838f39294b"
-  integrity sha512-w//oL8lOxFzug39nW77gafqIyUyrdRFFLLUZQwlPJ/5ZOxiovtskICi7AAQtGLboy0aOgpK04Y2/P6765Krm8A==
+"@holochain/hc-spin-rust-utils-linux-x64-gnu@0.700.0-rc.0":
+  version "0.700.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-linux-x64-gnu/-/hc-spin-rust-utils-linux-x64-gnu-0.700.0-rc.0.tgz#dcc943844480be6b3addf159bf29cfaaa3feaaa6"
+  integrity sha512-5H+KNJcVsehRylq6lV1nsUx1OPyMs9WXvEvvSEmjnQCdBJ7g6CVTRF9rCPfbJietLVSKSv2qLnr1qL39R+SXYw==
 
-"@holochain/hc-spin-rust-utils-win32-x64-msvc@0.700.0-dev.3":
-  version "0.700.0-dev.3"
-  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-win32-x64-msvc/-/hc-spin-rust-utils-win32-x64-msvc-0.700.0-dev.3.tgz#b2b511a85d0747270f6816b126bd97e760af1f6d"
-  integrity sha512-BdbyRBUiOCVcwZOXnczXZ5+ShPss/C1Vm0+cQa+EewNLfFo4DvP2USjKS3thicpdVnz6hXVEZL0Wm1meL2iwbw==
+"@holochain/hc-spin-rust-utils-win32-x64-msvc@0.700.0-rc.0":
+  version "0.700.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils-win32-x64-msvc/-/hc-spin-rust-utils-win32-x64-msvc-0.700.0-rc.0.tgz#6f8e484292fdc12aa967a68f497da1178cbe7cc4"
+  integrity sha512-g0ez20Yn4Y+1li5AdTWau3d+QjmDKBW14lv7j2RNkNbwbtwgHwx/KqsAX+bSkCzOrysSfJowXHQJPz2zXUDMLA==
 
-"@holochain/hc-spin-rust-utils@0.700.0-dev.3":
-  version "0.700.0-dev.3"
-  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils/-/hc-spin-rust-utils-0.700.0-dev.3.tgz#c277c6f421ce79a4b2f5e38ccd253ebdeb177e0d"
-  integrity sha512-OenmSB4EfJ9afSbfGPfaSeuIXui9m9rXFslMLzVZaA4dLsQ++m3VQn21Ly045OlomUDf+jt42Fyt+sABkrYCiw==
+"@holochain/hc-spin-rust-utils@0.700.0-rc.0":
+  version "0.700.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@holochain/hc-spin-rust-utils/-/hc-spin-rust-utils-0.700.0-rc.0.tgz#34ddcac62baf7dc7f93103f46c6578ed6159bf53"
+  integrity sha512-3YEarZWlsazFXIcVGs+fGDBuppTK7CfpOT/nuHIRHcYVWV3N+87EBEdrjv0TQYC+FJ3SzIzc/YnHi2wh38sL0w==
   optionalDependencies:
-    "@holochain/hc-spin-rust-utils-darwin-arm64" "0.700.0-dev.3"
-    "@holochain/hc-spin-rust-utils-darwin-x64" "0.700.0-dev.3"
-    "@holochain/hc-spin-rust-utils-linux-arm64-gnu" "0.700.0-dev.3"
-    "@holochain/hc-spin-rust-utils-linux-x64-gnu" "0.700.0-dev.3"
-    "@holochain/hc-spin-rust-utils-win32-x64-msvc" "0.700.0-dev.3"
+    "@holochain/hc-spin-rust-utils-darwin-arm64" "0.700.0-rc.0"
+    "@holochain/hc-spin-rust-utils-darwin-x64" "0.700.0-rc.0"
+    "@holochain/hc-spin-rust-utils-linux-arm64-gnu" "0.700.0-rc.0"
+    "@holochain/hc-spin-rust-utils-linux-x64-gnu" "0.700.0-rc.0"
+    "@holochain/hc-spin-rust-utils-win32-x64-msvc" "0.700.0-rc.0"
 
 "@humanfs/core@^0.19.2":
   version "0.19.2"
@@ -2567,7 +2567,7 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libsodium-wrappers@^0.8.4:
+libsodium-wrappers@^0.8:
   version "0.8.4"
   resolved "https://registry.yarnpkg.com/libsodium-wrappers/-/libsodium-wrappers-0.8.4.tgz#c9953edc16f2f40f1f4d2580147b8de775fb901c"
   integrity sha512-mu8aAWucZjTB5O/BtGXtW4e1agy7uHxNYG7zPthmmD1jU43LCDmSWZLN4JhflbdPXj3yDO4lxM1O9hLDgIOXDw==
