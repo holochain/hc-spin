@@ -28,7 +28,7 @@ To install the latest version compatible with **holochain 0.4.x**:
 npm install --save-dev @holochain/hc-spin@">=0.400.0 <0.500.0"
 ```
 
-## Usage (holochain 0.6)
+## Usage (holochain 0.7)
 
 ```txt
 Usage: hc-spin [options] <path>
