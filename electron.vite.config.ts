@@ -1,13 +1,18 @@
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite';
-import path from 'path';
+import { defineConfig, externalizeDepsPlugin } from "electron-vite";
+import path from "path";
 
-import packageJson from './package.json';
+import packageJson from "./package.json";
 
 export default defineConfig({
   main: {
     plugins: [
       externalizeDepsPlugin({
-        exclude: ['@holochain/client', 'nanoid', 'get-port', 'electron-context-menu'],
+        exclude: [
+          "@holochain/client",
+          "nanoid",
+          "get-port",
+          "electron-context-menu",
+        ],
       }),
     ],
     define: {
@@ -22,9 +27,15 @@ export default defineConfig({
     build: {
       rollupOptions: {
         input: {
-          admin: path.resolve(__dirname, 'src/renderer/index.html'),
-          splashscreen: path.resolve(__dirname, 'src/renderer/indexNotFound1.html'),
-          selectmediasource: path.resolve(__dirname, 'src/renderer/indexNotFound2.html'),
+          admin: path.resolve(__dirname, "src/renderer/index.html"),
+          splashscreen: path.resolve(
+            __dirname,
+            "src/renderer/indexNotFound1.html",
+          ),
+          selectmediasource: path.resolve(
+            __dirname,
+            "src/renderer/indexNotFound2.html",
+          ),
         },
       },
     },
