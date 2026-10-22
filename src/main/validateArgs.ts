@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
 
-import { UISource } from './windows';
+import { UISource } from "./windows";
 
 export type CliOpts = {
   appId?: string;
@@ -32,7 +32,7 @@ export type CliOptsValidated = {
 };
 
 export type HappOrWebhappPath = {
-  type: 'happ' | 'webhapp';
+  type: "happ" | "webhapp";
   path: string;
 };
 
@@ -47,7 +47,10 @@ export function validateCliArgs(
     );
   }
   const happOrWebhappPath = cliArgs[0];
-  if (!happOrWebhappPath.endsWith('.happ') && !happOrWebhappPath.endsWith('.webhapp')) {
+  if (
+    !happOrWebhappPath.endsWith(".happ") &&
+    !happOrWebhappPath.endsWith(".webhapp")
+  ) {
     throw new Error(
       `The path passed to hc spin must either be a .happ or a .webhapp file but got path '${happOrWebhappPath}'`,
     );
@@ -59,7 +62,7 @@ export function validateCliArgs(
   }
   if (
     cliOpts.numAgents !== undefined &&
-    (typeof cliOpts.numAgents !== 'number' || Number.isNaN(cliOpts.numAgents))
+    (typeof cliOpts.numAgents !== "number" || Number.isNaN(cliOpts.numAgents))
   ) {
     throw new Error(
       `The --num-agents (-n) option must be of type number but got: ${cliOpts.numAgents}`,
@@ -67,31 +70,34 @@ export function validateCliArgs(
   }
   if (
     cliOpts.targetArcFactor !== undefined &&
-    (typeof cliOpts.targetArcFactor !== 'number' || Number.isNaN(cliOpts.targetArcFactor))
+    (typeof cliOpts.targetArcFactor !== "number" ||
+      Number.isNaN(cliOpts.targetArcFactor))
   ) {
     throw new Error(
       `The --target-arc-factor (-t) option must be a valid number but got: ${cliOpts.targetArcFactor}`,
     );
   }
-  const isHapp = happOrWebhappPath.endsWith('.happ');
+  const isHapp = happOrWebhappPath.endsWith(".happ");
   if (isHapp && !cliOpts.uiPath && !cliOpts.uiPort) {
     throw new Error(
-      'If you pass a .happ file as argument, you must also provide either the --ui-port or the --ui-path option pointing to the UI assets.',
+      "If you pass a .happ file as argument, you must also provide either the --ui-port or the --ui-path option pointing to the UI assets.",
     );
   }
   if (cliOpts.uiPath && cliOpts.uiPort) {
     throw new Error(
-      'Only one of --ui-port and --ui-path is allowed at the same time but got values for both.',
+      "Only one of --ui-port and --ui-path is allowed at the same time but got values for both.",
     );
   }
 
-  const appId = cliOpts.appId ? cliOpts.appId : path.parse(path.basename(cliArgs[0])).name;
+  const appId = cliOpts.appId
+    ? cliOpts.appId
+    : path.parse(path.basename(cliArgs[0])).name;
   const holochainPath = cliOpts.holochainPath;
   const numAgents = cliOpts.numAgents ? cliOpts.numAgents : 2;
 
   let forceAdminPorts: number[] | undefined;
   if (cliOpts.forceAdminPorts !== undefined) {
-    forceAdminPorts = cliOpts.forceAdminPorts.split(',').map((portStr) => {
+    forceAdminPorts = cliOpts.forceAdminPorts.split(",").map((portStr) => {
       const portInt = parseInt(portStr);
 
       if (Number.isNaN(portInt)) {
@@ -110,15 +116,18 @@ export function validateCliArgs(
     networkSeed: cliOpts.networkSeed,
     targetArcFactor: cliOpts.targetArcFactor,
     uiSource: cliOpts.uiPath
-      ? { type: 'path', path: cliOpts.uiPath }
+      ? { type: "path", path: cliOpts.uiPath }
       : cliOpts.uiPort
-        ? { type: 'port', port: cliOpts.uiPort }
-        : { type: 'path', path: path.join(appDataRootDir, 'apps', appId, 'ui') },
+        ? { type: "port", port: cliOpts.uiPort }
+        : {
+            type: "path",
+            path: path.join(appDataRootDir, "apps", appId, "ui"),
+          },
     relayUrl: cliOpts.relayUrl,
     bootstrapUrl: cliOpts.bootstrapUrl,
     happOrWebhappPath: isHapp
-      ? { type: 'happ', path: happOrWebhappPath }
-      : { type: 'webhapp', path: happOrWebhappPath },
+      ? { type: "happ", path: happOrWebhappPath }
+      : { type: "webhapp", path: happOrWebhappPath },
     openDevtools: cliOpts.openDevtools ? true : false,
     forceAdminPorts,
   };

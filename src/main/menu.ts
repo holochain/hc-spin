@@ -1,21 +1,21 @@
-import { BrowserWindow, Menu } from 'electron';
+import { BrowserWindow, Menu } from "electron";
 
 export const menu = Menu.buildFromTemplate([
   {
-    label: 'Options',
+    label: "Options",
     submenu: [
       {
-        label: 'toggle dev tools (F12)',
+        label: "toggle dev tools (F12)",
         click: () => {
           const focusedWindow = BrowserWindow.getFocusedWindow();
           if (focusedWindow) {
             focusedWindow.webContents.toggleDevTools();
           }
         },
-        accelerator: 'F12',
+        accelerator: "F12",
       },
       {
-        label: 'toggle dev tools (Ctrl+Shift+I)',
+        label: "toggle dev tools (Ctrl+Shift+I)",
         click: () => {
           const focusedWindow = BrowserWindow.getFocusedWindow();
           if (focusedWindow) {
@@ -23,20 +23,20 @@ export const menu = Menu.buildFromTemplate([
           }
         },
         visible: false,
-        accelerator: 'CommandOrControl+Shift+I',
+        accelerator: "CommandOrControl+Shift+I",
       },
       {
-        label: 'Reload (F5)',
+        label: "Reload (F5)",
         click: () => {
           const focusedWindow = BrowserWindow.getFocusedWindow();
           if (focusedWindow) {
             focusedWindow.webContents.reload();
           }
         },
-        accelerator: 'F5',
+        accelerator: "F5",
       },
       {
-        label: 'Reload (Ctrl+R)',
+        label: "Reload (Ctrl+R)",
         click: () => {
           const focusedWindow = BrowserWindow.getFocusedWindow();
           if (focusedWindow) {
@@ -44,45 +44,45 @@ export const menu = Menu.buildFromTemplate([
           }
         },
         visible: false,
-        accelerator: 'CommandOrControl+R',
+        accelerator: "CommandOrControl+R",
       },
     ],
   },
   {
-    label: 'Edit',
+    label: "Edit",
     submenu: [
       {
-        label: 'Undo',
-        role: 'undo',
-        accelerator: 'CommandOrControl+Z',
+        label: "Undo",
+        role: "undo",
+        accelerator: "CommandOrControl+Z",
       },
       {
-        label: 'Redo',
-        role: 'redo',
-        accelerator: 'CommandOrControl+Shift+Z',
+        label: "Redo",
+        role: "redo",
+        accelerator: "CommandOrControl+Shift+Z",
       },
       {
-        type: 'separator',
+        type: "separator",
       },
       {
-        label: 'Cut',
-        role: 'cut',
-        accelerator: 'CommandOrControl+X',
+        label: "Cut",
+        role: "cut",
+        accelerator: "CommandOrControl+X",
       },
       {
-        label: 'Copy',
-        role: 'copy',
-        accelerator: 'CommandOrControl+C',
+        label: "Copy",
+        role: "copy",
+        accelerator: "CommandOrControl+C",
       },
       {
-        label: 'Paste',
-        role: 'paste',
-        accelerator: 'CommandOrControl+V',
+        label: "Paste",
+        role: "paste",
+        accelerator: "CommandOrControl+V",
       },
       {
-        label: 'Select All',
-        role: 'selectAll',
-        accelerator: 'CommandOrControl+A',
+        label: "Select All",
+        role: "selectAll",
+        accelerator: "CommandOrControl+A",
       },
     ],
   },
